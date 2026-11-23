@@ -2,6 +2,6 @@
   "ciudad": "Santa Marta",
   "zona_activa": "unimagdalena",
   "zonas": {
-    "unimagdalena": { "nombre": "Sector Universidad del Magdalena", "centro": [11.22624, -74.18860], "zoom": 12 }
+    "unimagdalena": { "nombre": "Sector Universidad del Magdalena", "centro": [11.22624, -74.18860], "zoom": 16 }
   }
 }
