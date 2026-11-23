@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mal parqueo en Santa Marta</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <style>
+    :root { --fondo:#f6f7f5; --texto:#1d2a2e; --acento:#0b6e75; --borde:#cfd6d4; }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; font-family: system-ui, sans-serif; color: var(--texto); background: var(--fondo); }
+    body { display: flex; flex-direction: column; }
+    header { padding: .6rem 1rem; border-bottom: 1px solid var(--borde); display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; align-items: center; }
+    h1 { font-size: 1.1rem; margin: 0; }
+    label { font-size: .9rem; display: flex; align-items: center; gap: .4rem; }
+    #mapa { flex: 1; min-height: 300px; }
+    #info { font-size: .85rem; padding: .4rem 1rem; border-top: 1px solid var(--borde); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Mal parqueo e invasión de espacio público</h1>
+    <label><input type="checkbox" id="chk-calor" checked> Mapa de calor</label>
+    <label><input type="checkbox" id="chk-puntos" checked> Puntos individuales</label>
+    <span id="conteo"></span>
+  </header>
+  <div id="mapa"></div>
+  <div id="info">Toca el mapa para ver las coordenadas de un punto.</div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.heat/0.2.0/leaflet-heat.js"></script>
+  <script src="criticidad.js"></script>
+  <script src="mapa.js"></script>
+</body>
+</html>

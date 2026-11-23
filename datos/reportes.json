@@ -1,0 +1,13 @@
+[
+  {
+    "id": "MP-001",
+    "origen": "campo",
+    "fecha_hora": "2026-11-20T15:10",
+    "lat": 11.2226,
+    "lng": -74.1862,
+    "cuadra": "EJEMPLO-CUADRA-1",
+    "categoria": "doble_fila",
+    "actor": "vehiculo_particular",
+    "foto": ""
+  }
+]
