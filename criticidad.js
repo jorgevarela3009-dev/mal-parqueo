@@ -6,12 +6,11 @@ function aMinutos(hhmm) {
   return h * 60 + m;
 }
 
-// Deduce "pico" o "valle" a partir de la hora del reporte.
 function franjaDe(fechaHora, criterios) {
-  const minutos = aMinutos(fechaHora.slice(11, 16)); // "2026-11-18T11:40" -> "11:40"
-  for (const rango of criterios.horas_pico) {      // repetición
+  const minutos = aMinutos(fechaHora.slice(11, 16));
+  for (const rango of criterios.horas_pico) {
     const [ini, fin] = rango.split("-");
-    if (minutos >= aMinutos(ini) && minutos <= aMinutos(fin)) return "pico"; // condición
+    if (minutos >= aMinutos(ini) && minutos <= aMinutos(fin)) return "pico";
   }
   return "valle";
 }
@@ -20,22 +19,24 @@ function nivelDe(puntaje, criterios) {
   for (const [nivel, [min, max]] of Object.entries(criterios.niveles)) {
     if (puntaje >= min && puntaje <= max) return nivel;
   }
-  return "Alto"; // si se pasa del rango, se trata como Alto
+  return "Alto";
 }
 
-// Puntaje = categoría + tipo de vía + franja horaria
+// Puntaje = categoría + tipo de vía + franja horaria.
+// El tipo de vía sale de vias.json si la cuadra está ahí; si no, del que
+// guardó el reporte (detectado con OpenStreetMap o elegido a mano).
 function calcularCriticidad(reporte, vias, criterios) {
-  const via = vias[reporte.cuadra];
-  if (!via) return null; // cuadra no registrada en vias.json
+  const enJson = vias[reporte.cuadra];
+  const tipo = enJson ? enJson.tipo : reporte.via_tipo;
+  if (!tipo) return null;
   const franja = franjaDe(reporte.fecha_hora, criterios);
   const puntaje =
     criterios.categoria[reporte.categoria] +
-    criterios.via[via.tipo] +
+    criterios.via[tipo] +
     criterios.franja[franja];
   return { puntaje, nivel: nivelDe(puntaje, criterios), franja };
 }
 
-// Puntaje máximo posible (sirve para escalar la intensidad del calor)
 function puntajeMaximo(criterios) {
   const max = (obj) => Math.max(...Object.values(obj));
   return max(criterios.categoria) + max(criterios.via) + max(criterios.franja);
