@@ -5,10 +5,12 @@ const CATEGORIAS = {
   doble_fila: "Doble fila o parqueo prohibido",
   bloqueo_rampa_cebra_paradero: "Bloqueo de rampa, cebra o paradero",
   invasion_anden: "Invasión de andén",
+  otro: "Otro (especificar)",
 };
 const ACTORES = {
   vehiculo_particular: "Vehículo particular", motocicleta: "Motocicleta",
   vehiculo_carga: "Vehículo de carga descargando", mobiliario_comercial: "Mobiliario comercial",
+  otro: "Otro (especificar)",
 };
 
 function leerLocales() {
@@ -53,13 +55,19 @@ function guardar() {
   if (!punto) return msg("Marca la ubicación primero.");
   const tipo = via ? via.tipo : $("f-via").value;
   if (!tipo) return msg("Elige el tipo de vía.");
+  const cat = $("f-categoria").value, act = $("f-actor").value;
+  if (estado.criterios.categoria[cat] === undefined) return msg("Falta la categoría '" + cat + "' en criterios.json.");
+  if (cat === "otro" && !$("f-categoria-otro").value.trim()) return msg("Describe cuál es la obstrucción.");
+  if (act === "otro" && !$("f-actor-otro").value.trim()) return msg("Describe cuál es el actor.");
   const rep = {
     id: "CI-" + Date.now().toString(36),
     origen: $("f-campo").checked ? "campo" : "ciudadano",
     fecha_hora: $("f-hora").value || ahoraLocal(),
     lat: +punto[0].toFixed(5), lng: +punto[1].toFixed(5),
     cuadra: via ? via.id : "SIN-CUADRA", via_tipo: tipo, via_fuente: via ? via.fuente : "manual",
-    categoria: $("f-categoria").value, actor: $("f-actor").value, foto: "",
+    categoria: cat, actor: act, foto: "",
+    categoria_otro: cat === "otro" ? $("f-categoria-otro").value.trim() : "",
+    actor_otro: act === "otro" ? $("f-actor-otro").value.trim() : "",
   };
   guardarLocales([...leerLocales(), rep]);
   const c = calcularCriticidad(rep, estado.vias, estado.criterios);
@@ -68,11 +76,15 @@ function guardar() {
   punto = null; via = null; consulta++;
   if (marcador) { estado.mapa.removeLayer(marcador); marcador = null; }
   $("f-hora").value = ahoraLocal();
+  for (const id of ["f-categoria-otro", "f-actor-otro"]) { $(id).value = ""; $(id).hidden = true; }
+  $("f-categoria").selectedIndex = 0; $("f-actor").selectedIndex = 0;
 }
 
 window.listo.then(() => {
   llenar($("f-categoria"), CATEGORIAS);
   llenar($("f-actor"), ACTORES);
+  $("f-categoria").addEventListener("change", () => { $("f-categoria-otro").hidden = $("f-categoria").value !== "otro"; });
+  $("f-actor").addEventListener("change", () => { $("f-actor-otro").hidden = $("f-actor").value !== "otro"; });
   estado.mapa.on("click", (e) => fijarPunto(e.latlng.lat, e.latlng.lng));
   $("btn-abrir").addEventListener("click", () => { abrirPanel(); msg("Toca el mapa o usa tu ubicación."); });
   $("btn-cerrar").addEventListener("click", () => { $("panel").hidden = true; estado.mapa.invalidateSize(); });

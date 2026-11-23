@@ -51,7 +51,7 @@ function dibujar() {
       radius: 7, color: "#fff", weight: 1.5, bubblingMouseEvents: false,
       fillColor: COLORES[r.criticidad.nivel], fillOpacity: 0.9,
     }).bindPopup(
-      `<b>${r.cuadra}</b><br>${r.categoria} · ${r.actor}<br>${r.fecha_hora.replace("T", " ")}<br>` +
+      `<b>${r.cuadra}</b><br>${r.categoria_otro || r.categoria} · ${r.actor_otro || r.actor}<br>${r.fecha_hora.replace("T", " ")}<br>` +
       `Criticidad: <b>${r.criticidad.puntaje} (${r.criticidad.nivel})</b>`
     ).addTo(estado.capaPuntos);
   }

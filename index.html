@@ -18,7 +18,7 @@
     #mapa { flex: 1; min-height: 240px; }
     #panel { padding: .8rem 1rem; border-top: 1px solid var(--borde); display: grid; gap: .6rem; max-width: 640px; width: 100%; margin: 0 auto; }
     #panel[hidden] { display: none; }
-    #panel select, #panel input[type=datetime-local] { font: inherit; font-size: 16px; padding: .55rem; width: 100%; border: 1px solid var(--borde); border-radius: 6px; }
+    #panel select, #panel input[type=datetime-local], #panel input[type=text] { font: inherit; font-size: 16px; padding: .55rem; width: 100%; border: 1px solid var(--borde); border-radius: 6px; }
     .fila { display: flex; gap: .6rem; flex-wrap: wrap; align-items: center; }
     #msg { font-size: .9rem; min-height: 1.2em; }
   </style>
@@ -39,7 +39,9 @@
       <span>o toca el mapa donde está la obstrucción</span>
     </div>
     <select id="f-categoria"></select>
+    <input type="text" id="f-categoria-otro" placeholder="¿Cuál? Descríbelo en pocas palabras" maxlength="60" hidden>
     <select id="f-actor"></select>
+    <input type="text" id="f-actor-otro" placeholder="¿Cuál? Descríbelo en pocas palabras" maxlength="60" hidden>
     <select id="f-via" hidden>
       <option value="">Tipo de vía (no se pudo detectar)</option>
       <option value="arterial">Arterial</option>
