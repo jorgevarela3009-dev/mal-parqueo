@@ -42,6 +42,13 @@ definitiva en campo.
 - Visualización de las vías estudiadas.
 - Herramienta de captura de coordenadas.
 - Almacenamiento local de reportes.
+- Filtros dinámicos por cuadra, categoría, actor,
+  franja horaria y nivel de criticidad.
+- Indicadores estadísticos de reportes visibles.
+- Conteo de cuadras con incidentes.
+- Distribución de incidentes por nivel de criticidad.
+- Actualización simultánea del mapa de calor,
+  puntos individuales y hexágonos según los filtros.
 
 ## Tecnologías utilizadas
 
@@ -86,6 +93,7 @@ decisiones iniciales sujetas a validación de campo.
 - coordenadas.js: delimitación geográfica.
 - hexagonos.js: agrupación espacial.
 - datos/: archivos de configuración y reportes.
+- filtros.js: procesamiento de filtros e indicadores.
 
 ## Almacenamiento de información
 
@@ -98,7 +106,6 @@ de datos ni requiere un backend.
 ## Funcionalidades pendientes
 
 - Fotografías opcionales anonimizadas.
-- Filtros dinámicos.
 - Ranking de las cinco cuadras más críticas.
 - Recomendaciones operativas.
 - Impresión del resumen.

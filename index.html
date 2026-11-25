@@ -36,22 +36,133 @@
 
     <!-- Indicadores principales -->
 
-    <section class="indicadores">
 
-        <div class="tarjeta">
-            <h2>Reportes registrados</h2>
-            <strong id="conteo">0</strong>
+<!-- Indicadores estadísticos -->
+
+<section class="indicadores">
+
+    <div class="tarjeta-indicador">
+
+        <span>Reportes visibles</span>
+        <strong id="conteo">0 reportes</strong>
+
+    </div>
+
+    <div class="tarjeta-indicador">
+
+        <span>Cuadras con incidentes</span>
+        <strong id="ind-cuadras">0</strong>
+
+    </div>
+
+    <div class="tarjeta-indicador indicador-alto">
+
+        <span>Criticidad alta</span>
+        <strong id="ind-alto">0</strong>
+
+    </div>
+
+    <div class="tarjeta-indicador indicador-medio">
+
+        <span>Criticidad media</span>
+        <strong id="ind-medio">0</strong>
+
+    </div>
+
+    <div class="tarjeta-indicador indicador-bajo">
+
+        <span>Criticidad baja</span>
+        <strong id="ind-bajo">0</strong>
+
+    </div>
+
+</section>
+
+
+<!-- Panel de filtros -->
+
+<section class="panel-filtros">
+
+    <div class="encabezado-filtros">
+
+        <div>
+            <h2>Filtros de incidentes</h2>
+            <p>Consulta los reportes de la zona estudiada.</p>
         </div>
 
-        <div class="tarjeta">
-            <h2>Zona de monitoreo</h2>
-            <strong>Santa Marta</strong>
+        <button type="button"
+                id="btn-limpiar-filtros"
+                class="sec">
+            Limpiar filtros
+        </button>
+
+    </div>
+
+    <div class="rejilla-filtros">
+
+        <div class="campo-filtro">
+
+            <label for="fil-cuadra">Cuadra</label>
+
+            <select id="fil-cuadra">
+                <option value="">Todas las cuadras</option>
+            </select>
+
         </div>
 
-    </section>
+        <div class="campo-filtro">
 
-    <!-- Controles del mapa -->
+            <label for="fil-categoria">Categoría</label>
 
+            <select id="fil-categoria">
+                <option value="">Todas las categorías</option>
+            </select>
+
+        </div>
+
+        <div class="campo-filtro">
+
+            <label for="fil-actor">Actor</label>
+
+            <select id="fil-actor">
+                <option value="">Todos los actores</option>
+            </select>
+
+        </div>
+
+        <div class="campo-filtro">
+
+            <label for="fil-franja">Franja horaria</label>
+
+            <select id="fil-franja">
+                <option value="">Todas las franjas</option>
+            </select>
+
+        </div>
+
+        <div class="campo-filtro">
+
+            <label for="fil-nivel">Criticidad</label>
+
+            <select id="fil-nivel">
+                <option value="">Todos los niveles</option>
+            </select>
+
+        </div>
+
+    </div>
+
+    <p id="resultado-filtros" aria-live="polite">
+        Mostrando 0 reportes
+    </p>
+
+    <div id="sin-resultados" hidden>
+        No hay incidentes que coincidan con los filtros.
+    </div>
+
+</section>
+
+<!-- Controles del mapa -->
     <section class="controles">
 
         <strong>Visualización:</strong>
@@ -301,6 +412,7 @@
     <script src="captura.js"></script>
     <script src="coordenadas.js"></script>
     <script src="vias-mapa.js"></script>
+    <script src="filtros.js"></script>
 
 </body>
 </html>
