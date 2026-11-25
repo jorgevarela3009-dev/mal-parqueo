@@ -1,0 +1,282 @@
+
+:root {
+    --fondo: #f1f5f9;
+    --texto: #1e293b;
+    --acento: #0d9488;
+    --azul: #12334a;
+    --borde: #dbe3ea;
+    --blanco: #ffffff;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    color: var(--texto);
+    background: var(--fondo);
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Encabezado principal */
+
+header {
+    background: var(--azul);
+    color: white;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+h1 {
+    font-size: 23px;
+    margin: 0;
+}
+
+.subtitulo {
+    font-size: 13px;
+    color: #cbd5e1;
+    margin: 5px 0 0;
+}
+
+/* Botones */
+
+button {
+    font: inherit;
+    padding: 11px 18px;
+    border: none;
+    border-radius: 8px;
+    background: var(--acento);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background: #0f766e;
+}
+
+button.sec {
+    background: white;
+    color: var(--acento);
+    border: 1px solid var(--acento);
+}
+
+/* Indicadores */
+
+.indicadores {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 15px 20px;
+}
+
+.tarjeta {
+    background: white;
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 5px #00000008;
+}
+
+.tarjeta h2 {
+    font-size: 13px;
+    color: #64748b;
+    margin: 0 0 8px;
+}
+
+.tarjeta strong {
+    font-size: 18px;
+    color: var(--azul);
+}
+
+/* Controles del mapa */
+
+.controles {
+    background: white;
+    margin: 0 20px 12px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--borde);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+label {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+input[type="checkbox"] {
+    accent-color: var(--acento);
+    width: 16px;
+    height: 16px;
+}
+
+/* Mapa principal */
+
+.contenedor-mapa {
+    position: relative;
+    display: flex;
+    flex: 1;
+    min-height: 350px;
+    margin: 0 20px 15px;
+    border-radius: 12px;
+    border: 1px solid var(--borde);
+    overflow: hidden;
+}
+
+#mapa {
+    flex: 1;
+    min-height: 350px;
+}
+
+/* Leyenda */
+
+#leyenda-hex {
+    position: absolute;
+    right: 12px;
+    bottom: 25px;
+    z-index: 500;
+    background: white;
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 12px;
+    max-width: 210px;
+    box-shadow: 0 2px 8px #0002;
+}
+
+.escala-hex {
+    display: block;
+    height: 10px;
+    margin: 8px 0;
+    border-radius: 4px;
+    background: linear-gradient(
+        90deg,
+        #fff5b1,
+        #fed976,
+        #feb24c,
+        #fd8d3c,
+        #f03b20,
+        #bd0026
+    );
+}
+
+/* Formulario de reportes */
+
+#panel {
+    background: white;
+    padding: 20px;
+    margin: 0 auto 15px;
+    width: calc(100% - 40px);
+    max-width: 640px;
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    display: grid;
+    gap: 12px;
+    box-shadow: 0 4px 12px #00000010;
+}
+
+#panel h2 {
+    margin: 0;
+    font-size: 20px;
+    color: var(--azul);
+}
+
+#panel select,
+#panel input[type="datetime-local"],
+#panel input[type="text"] {
+    font: inherit;
+    font-size: 16px;
+    padding: 11px;
+    width: 100%;
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    background: #f8fafc;
+}
+
+.fila {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+#msg {
+    font-size: 14px;
+    min-height: 20px;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+/* Pie de página */
+
+footer {
+    text-align: center;
+    padding: 12px;
+    color: #64748b;
+    font-size: 12px;
+}
+
+/* Adaptación a celulares */
+
+@media (max-width: 600px) {
+
+    header {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    #btn-abrir {
+        width: 100%;
+    }
+
+    .indicadores {
+        padding: 10px;
+        gap: 8px;
+    }
+
+    .tarjeta {
+        padding: 12px;
+    }
+
+    .tarjeta strong {
+        font-size: 15px;
+    }
+
+    .controles {
+        margin: 0 10px 10px;
+        gap: 12px;
+    }
+
+    .contenedor-mapa {
+        margin: 0 10px 10px;
+        min-height: 400px;
+    }
+
+    #panel {
+        width: calc(100% - 20px);
+        padding: 15px;
+    }
+}
