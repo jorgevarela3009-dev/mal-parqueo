@@ -85,7 +85,16 @@ window.listo.then(() => {
   llenar($("f-actor"), ACTORES);
   $("f-categoria").addEventListener("change", () => { $("f-categoria-otro").hidden = $("f-categoria").value !== "otro"; });
   $("f-actor").addEventListener("change", () => { $("f-actor-otro").hidden = $("f-actor").value !== "otro"; });
-  estado.mapa.on("click", (e) => fijarPunto(e.latlng.lat, e.latlng.lng));
+ estado.mapa.on("click", (e) => {
+
+    if (typeof modoCoordenadas !== "undefined"
+        && modoCoordenadas) {
+        return;
+    }
+
+    fijarPunto(e.latlng.lat, e.latlng.lng);
+
+});
   $("btn-abrir").addEventListener("click", () => { abrirPanel(); msg("Toca el mapa o usa tu ubicación."); });
   $("btn-cerrar").addEventListener("click", () => { $("panel").hidden = true; estado.mapa.invalidateSize(); });
   $("btn-guardar").addEventListener("click", guardar);
