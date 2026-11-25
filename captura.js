@@ -17,13 +17,21 @@ const ACTORES = {
 };
 
 function leerLocales() {
+
     try {
-        return JSON.parse(
+
+        const datos = JSON.parse(
             localStorage.getItem(CLAVE_LOCAL)
-        ) || [];
+        );
+
+        return Array.isArray(datos) ? datos : [];
+
     } catch (e) {
+
         return [];
+
     }
+
 }
 
 function guardarLocales(lista) {
@@ -94,16 +102,18 @@ function mostrarVia() {
 
 }
 
+
 function actualizarCriticidad() {
 
     const caja = $("info-criticidad");
     const fecha = $("f-hora").value;
 
-    $("btn-guardar").disabled = !punto || !via;
+    $("btn-guardar").disabled = true;
+    caja.hidden = true;
 
-    caja.hidden = !via || !fecha;
-
-    if (!via || !fecha) return;
+    if (!punto || !via || !fechaValida(fecha)) {
+        return;
+    }
 
     const temporal = {
         cuadra: via.id,
@@ -132,7 +142,12 @@ function actualizarCriticidad() {
 
     caja.dataset.nivel = c.nivel;
 
+    caja.hidden = false;
+
+    $("btn-guardar").disabled = false;
+
 }
+
 
 async function fijarPunto(lat, lng) {
 
@@ -205,6 +220,17 @@ function guardar() {
 
     const cat = $("f-categoria").value;
     const act = $("f-actor").value;
+    if (!fechaValida($("f-hora").value)) {
+
+    return msg("Selecciona una fecha y hora válidas.");
+
+}
+
+if (!Object.hasOwn(ACTORES, act)) {
+
+    return msg("Selecciona un actor válido.");
+
+}
 
     if (estado.criterios.categoria[cat] === undefined) {
         return msg("Categoría no configurada.");
@@ -228,7 +254,7 @@ function guardar() {
             ? "campo"
             : "ciudadano",
 
-        fecha_hora: $("f-hora").value || ahoraLocal(),
+        fecha_hora: $("f-hora").value,
 
         lat: +punto[0].toFixed(6),
         lng: +punto[1].toFixed(6),
