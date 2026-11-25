@@ -157,6 +157,30 @@
         <div class="fila">
 
             <button type="button" id="btn-gps">
+                
+<div id="info-via" hidden>
+
+    <h3>Ubicación detectada</h3>
+
+    <div class="dato-via">
+        <span>Identificador de cuadra</span>
+        <strong id="via-codigo">---</strong>
+    </div>
+
+    <div class="dato-via">
+        <span>Nombre de la vía</span>
+        <strong id="via-nombre">---</strong>
+    </div>
+
+    <div class="dato-via">
+        <span>Tipo de vía</span>
+        <strong id="via-tipo">---</strong>
+    </div>
+
+    <p id="via-estado"></p>
+
+</div>
+
                 Usar mi ubicación
             </button>
 
@@ -188,21 +212,7 @@
                placeholder="Describe el actor"
                maxlength="60" hidden>
 
-        <select id="f-via" hidden>
-
-            <option value="">
-                Tipo de vía (no se pudo detectar)
-            </option>
-
-            <option value="arterial">
-                Arterial
-            </option>
-
-            <option value="secundaria">
-                Secundaria
-            </option>
-
-        </select>
+        
 
         <label for="f-hora">
             Fecha y hora del incidente
@@ -217,6 +227,31 @@
         </label>
 
         <div class="fila">
+
+<div id="info-criticidad" hidden>
+
+    <h3>Criticidad del incidente</h3>
+
+    <div class="resumen-criticidad">
+
+        <div>
+            <span>Franja horaria</span>
+            <strong id="franja-detectada">---</strong>
+        </div>
+
+        <div>
+            <span>Puntaje</span>
+            <strong id="puntaje-detectado">---</strong>
+        </div>
+
+        <div>
+            <span>Nivel</span>
+            <strong id="nivel-detectado">---</strong>
+        </div>
+
+    </div>
+
+</div>
 
             <button type="button" id="btn-guardar">
                 Guardar reporte
