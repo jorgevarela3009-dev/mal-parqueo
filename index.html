@@ -9,7 +9,7 @@
     :root { --fondo:#f6f7f5; --texto:#1d2a2e; --acento:#0b6e75; --borde:#cfd6d4; }
     * { box-sizing: border-box; }
     html, body { height: 100%; margin: 0; font-family: system-ui, sans-serif; color: var(--texto); background: var(--fondo); }
-    body { display: flex; flex-direction: column; }
+    body { display: flex; flex-direction: column; position: relative; }
     header { padding: .6rem 1rem; border-bottom: 1px solid var(--borde); display: flex; flex-wrap: wrap; gap: .5rem 1.2rem; align-items: center; }
     h1 { font-size: 1.1rem; margin: 0; }
     label { font-size: .9rem; display: flex; align-items: center; gap: .4rem; }
@@ -21,6 +21,12 @@
     #panel select, #panel input[type=datetime-local], #panel input[type=text] { font: inherit; font-size: 16px; padding: .55rem; width: 100%; border: 1px solid var(--borde); border-radius: 6px; }
     .fila { display: flex; gap: .6rem; flex-wrap: wrap; align-items: center; }
     #msg { font-size: .9rem; min-height: 1.2em; }
+    #leyenda-hex { position: absolute; right: .8rem; bottom: .8rem; z-index: 500;
+      background: #fff; border: 1px solid var(--borde); border-radius: 6px;
+      padding: .45rem .6rem; font-size: .8rem; box-shadow: 0 1px 4px #0002; max-width: 200px; }
+    #leyenda-hex[hidden] { display: none; }
+    .escala-hex { display: block; height: 10px; margin: .3rem 0; border-radius: 3px;
+      background: linear-gradient(90deg,#fff5b1,#fed976,#feb24c,#fd8d3c,#f03b20,#bd0026); }
   </style>
 </head>
 <body>
@@ -28,10 +34,16 @@
     <h1>Mal parqueo e invasión de espacio público</h1>
     <label><input type="checkbox" id="chk-calor" checked> Mapa de calor</label>
     <label><input type="checkbox" id="chk-puntos" checked> Puntos</label>
+    <label><input type="checkbox" id="chk-hex"> Hexágonos</label>
     <span id="conteo"></span>
     <button type="button" id="btn-abrir">Reportar</button>
   </header>
   <div id="mapa"></div>
+  <div id="leyenda-hex" hidden>
+    Hexágonos de 50 m: el color es la <b>suma de criticidad</b> de los reportes que caen dentro.
+    <span class="escala-hex"></span>
+    menor → mayor
+  </div>
 
   <div id="panel" hidden>
     <div class="fila">
@@ -60,6 +72,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.heat/0.2.0/leaflet-heat.js"></script>
   <script src="criticidad.js"></script>
   <script src="via.js"></script>
+  <script src="hexagonos.js"></script>
   <script src="mapa.js"></script>
   <script src="captura.js"></script>
 </body>
