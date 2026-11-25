@@ -75,49 +75,144 @@ function escaparHTML(valor) {
 
 }
 
+
+// Actualizar mapa, filtros e indicadores.
+
 function dibujar() {
-  const maximo = puntajeMaximo(estado.criterios);
-  const vistos = new Set();
-  const datos = [];
-  for (const r of [...estado.base, ...leerLocales()]) {
-if (!r || typeof r !== "object") continue;
 
-if (typeof r.id !== "string" ||
-    !r.id.trim()) continue;
+    const maximo = puntajeMaximo(estado.criterios);
 
-if (!Number.isFinite(r.lat) ||
-    !Number.isFinite(r.lng)) continue;
+    const vistos = new Set();
 
-if (Math.abs(r.lat) > 90 ||
-    Math.abs(r.lng) > 180) continue;
+    const todos = [];
 
-if (vistos.has(r.id)) continue;
+    // Unir reportes del repositorio y del navegador.
 
-vistos.add(r.id);
-    const c = calcularCriticidad(r, estado.vias, estado.criterios);
-    if (c) datos.push({ ...r, criticidad: c });
-  }
-  estado.capaCalor.setLatLngs(datos.map((r) => [r.lat, r.lng, r.criticidad.puntaje / maximo]));
-  estado.capaPuntos.clearLayers();
-  for (const r of datos) {
-    L.circleMarker([r.lat, r.lng], {
-      radius: 7, color: "#fff", weight: 1.5, bubblingMouseEvents: false,
-      fillColor: COLORES[r.criticidad.nivel], fillOpacity: 0.9,
-      pane: "puntos",
+    for (const r of [...estado.base, ...leerLocales()]) {
 
-    }).bindPopup(
-      `<b>${escaparHTML(r.cuadra)}</b><br>` +
-      `${escaparHTML(r.categoria_otro || r.categoria)} · ` +
-      `${escaparHTML(r.actor_otro || r.actor)}<br>` +
-      `${escaparHTML(r.fecha_hora.replace("T", " "))}<br>` +
-      `Criticidad: <b>${r.criticidad.puntaje} ` +
-      `(${escaparHTML(r.criticidad.nivel)})</b>`
-    ).addTo(estado.capaPuntos);
+        if (!r || typeof r !== "object") continue;
 
-  }
-  dibujarHexagonos(datos);
-  document.getElementById("conteo").textContent = datos.length + " reportes";
+        if (typeof r.id !== "string" ||
+            !r.id.trim()) continue;
+
+        if (!Number.isFinite(r.lat) ||
+            !Number.isFinite(r.lng)) continue;
+
+        if (Math.abs(r.lat) > 90 ||
+            Math.abs(r.lng) > 180) continue;
+
+        if (vistos.has(r.id)) continue;
+
+        const c = calcularCriticidad(
+            r,
+            estado.vias,
+            estado.criterios
+        );
+
+        if (!c) continue;
+
+        vistos.add(r.id);
+
+        todos.push({
+            ...r,
+            criticidad: c
+        });
+
+    }
+
+    // Aplicar los filtros seleccionados.
+
+    const datos = typeof aplicarFiltros === "function"
+        ? aplicarFiltros(todos)
+        : todos;
+
+    // Conservar los datos para futuras funcionalidades.
+
+    estado.reportesTodos = todos;
+
+    estado.reportesFiltrados = datos;
+
+    // Actualizar el mapa de calor.
+
+    estado.capaCalor.setLatLngs(
+
+        datos.map(r => [
+
+            r.lat,
+            r.lng,
+            r.criticidad.puntaje / maximo
+
+        ])
+
+    );
+
+    // Actualizar los puntos individuales.
+
+    estado.capaPuntos.clearLayers();
+
+    for (const r of datos) {
+
+        const categoria =
+            CATEGORIAS[r.categoria] || r.categoria;
+
+        const actor =
+            ACTORES[r.actor] || r.actor;
+
+        L.circleMarker([r.lat, r.lng], {
+
+            radius: 7,
+
+            color: "#ffffff",
+
+            weight: 1.5,
+
+            bubblingMouseEvents: false,
+
+            fillColor: COLORES[r.criticidad.nivel],
+
+            fillOpacity: 0.9,
+
+            pane: "puntos"
+
+        }).bindPopup(
+
+            `<b>${escaparHTML(r.cuadra)}</b><br>` +
+
+            `${escaparHTML(r.categoria_otro || categoria)}<br>` +
+
+            `Actor: ${escaparHTML(r.actor_otro || actor)}<br>` +
+
+            `Fecha: ${escaparHTML(r.fecha_hora.replace("T", " "))}<br>` +
+
+            `Franja: ${escaparHTML(r.criticidad.franja)}<br>` +
+
+            `Criticidad: <b>${r.criticidad.puntaje} ` +
+
+            `(${escaparHTML(r.criticidad.nivel)})</b>`
+
+        ).addTo(estado.capaPuntos);
+
+    }
+
+    // Actualizar los hexágonos con los mismos filtros.
+
+    dibujarHexagonos(datos);
+
+    // Actualizar indicadores estadísticos.
+
+    if (typeof actualizarIndicadores === "function") {
+
+        actualizarIndicadores(datos, todos.length);
+
+    } else {
+
+        document.getElementById("conteo").textContent =
+            datos.length + " reportes";
+
+    }
+
 }
+
 
 const COLORES_HEX = ["#fff5b1", "#fed976", "#feb24c", "#fd8d3c", "#f03b20", "#bd0026"];
 const ANCHO_HEX = 50; // metros, punta arriba
