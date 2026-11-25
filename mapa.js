@@ -203,11 +203,9 @@ function dibujar() {
     if (typeof actualizarIndicadores === "function") {
 
         actualizarIndicadores(datos, todos.length);
-      if (typeof actualizarResumen === "function") {
-
-    actualizarResumen(datos);
-
-}
+        if (typeof actualizarResumen === "function") {
+            actualizarResumen(datos);
+        }
 
     } else {
 

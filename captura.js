@@ -47,6 +47,13 @@ let punto = null;
 let marcador = null;
 let via = null;
 let consulta = 0;
+let modoRegistro = false;
+
+function activarRegistro(activo) {
+    modoRegistro = activo;
+    $("mapa").classList.toggle("modo-registro", activo);
+    $("ayuda-mapa").textContent = activo ? "Selecciona una ubicación en el mapa o usa el GPS en el formulario." : "Explora el mapa o pulsa Reportar incidente para registrar una ubicación.";
+}
 
 function msg(t) {
     $("msg").textContent = t;
@@ -177,6 +184,7 @@ async function fijarPunto(lat, lng) {
     );
 
     if (mia !== consulta) return;
+    $("panel").scrollIntoView({block: "start", behavior: "smooth"});
 
     via = r;
 
@@ -325,6 +333,7 @@ if (!Object.hasOwn(ACTORES, act)) {
 
 window.listo.then(() => {
 
+    if (!estado.mapa || !estado.capaPuntos) return;
     llenar($("f-categoria"), CATEGORIAS);
     llenar($("f-actor"), ACTORES);
 
@@ -356,6 +365,7 @@ window.listo.then(() => {
             return;
         }
 
+        if (!modoRegistro) return;
         fijarPunto(e.latlng.lat, e.latlng.lng);
 
     });
@@ -373,7 +383,9 @@ window.listo.then(() => {
 
         abrirPanel();
 
+        activarRegistro(true);
         msg("Toca el mapa o usa tu ubicación.");
+        $("panel").scrollIntoView({block: "start", behavior: "smooth"});
 
     });
 
@@ -381,6 +393,7 @@ window.listo.then(() => {
 
         limpiarUbicacion();
 
+        activarRegistro(false);
         $("panel").hidden = true;
 
         estado.mapa.invalidateSize();

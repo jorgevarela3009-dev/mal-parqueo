@@ -13,7 +13,7 @@
 }
 
 html, body {
-    height: 100%;
+    min-height: 100%;
     margin: 0;
     font-family: 'Segoe UI', system-ui, sans-serif;
     color: var(--texto);
@@ -21,8 +21,8 @@ html, body {
 }
 
 body {
-    display: flex;
-    flex-direction: column;
+    display: block;
+    line-height: 1.5;
 }
 
 /* Encabezado principal */
@@ -133,7 +133,7 @@ input[type="checkbox"] {
 .contenedor-mapa {
     position: relative;
     display: flex;
-    flex: 1;
+    height: clamp(420px, 60vh, 680px);
     min-height: 350px;
     margin: 0 20px 15px;
     border-radius: 12px;
@@ -966,3 +966,40 @@ footer {
 }
 
 
+
+/* Ajustes finales de distribución */
+@media screen {
+    body { padding-bottom: 20px; }
+    .indicadores, .panel-filtros, .controles, .contenedor-mapa,
+    #panel-coordenadas, #resumen-operativo {
+        width: calc(100% - 48px); max-width: 1440px;
+        margin: 20px auto; box-sizing: border-box;
+    }
+    .indicadores { padding: 0; gap: 16px; }
+    .panel-filtros, #resumen-operativo { padding: 24px; }
+    .controles { gap: 12px 20px; padding: 16px 20px; }
+    .controles label { padding: 6px 8px; background: #f8fafc; border-radius: 6px; }
+    .controles input { margin: 0; flex-shrink: 0; }
+    .rejilla-filtros { gap: 16px; }
+    #panel { margin: 24px auto; gap: 16px; }
+    #panel .fila { gap: 12px; }
+    #panel .fila span { flex: 1 1 180px; }
+    #panel input, #panel select { min-width: 0; }
+    .resumen-indicadores { gap: 16px; }
+    .tabla-resumen th, .tabla-resumen td { vertical-align: top; }
+    .tabla-resumen { min-width: 800px; }
+    button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
+    #mapa { min-width: 0; height: 100%; }
+    #mapa.modo-registro { cursor: crosshair; }
+    .ayuda-mapa { color: #475569; font-size: 13px; margin: 0; flex-basis: 100%; }
+}
+@media screen and (max-width: 600px) {
+    .indicadores, .panel-filtros, .controles, .contenedor-mapa,
+    #panel-coordenadas, #resumen-operativo { width: calc(100% - 24px); margin: 14px auto; }
+    .panel-filtros, #resumen-operativo { padding: 16px; }
+    .rejilla-filtros { grid-template-columns: 1fr; gap: 12px; }
+    .indicadores { gap: 10px; }
+    .contenedor-mapa { height: 440px; }
+    #panel { width: calc(100% - 24px); }
+    #leyenda-hex { max-width: 160px; font-size: 10px; }
+}

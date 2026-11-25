@@ -476,6 +476,11 @@ function actualizarResumen(reportes) {
 
         });
 
+    const excluidos = reportes.length - datos.length;
+    const aviso = document.getElementById("res-excluidos");
+    aviso.hidden = excluidos === 0;
+    aviso.textContent = `${excluidos} reportes visibles no tienen una cuadra reconocida y no se incluyen en el ranking.`;
+
     dibujarRanking(ranking);
 
     dibujarTablaRanking(ranking);
