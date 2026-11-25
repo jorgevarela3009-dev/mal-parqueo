@@ -1,12 +1,84 @@
 
 {
-  "UNI-TRAMO-01": {
+  "UNI-01": {
     "zona": "unimagdalena",
     "tipo": "arterial",
-    "nombre": "Corredor frente a la Universidad del Magdalena",
+    "nombre": "Calle 29H - Cuadra 1",
     "trazo": [
-      [11.226242, -74.188591],
-      [11.224051, -74.191886]
+      [11.226301, -74.188335],
+      [11.226241, -74.188608]
+    ]
+  },
+  "UNI-02": {
+    "zona": "unimagdalena",
+    "tipo": "arterial",
+    "nombre": "Calle 29H - Cuadra 2",
+    "trazo": [
+      [11.226241, -74.188608],
+      [11.225975, -74.189367]
+    ]
+  },
+  "UNI-03": {
+    "zona": "unimagdalena",
+    "tipo": "arterial",
+    "nombre": "Calle 29H - Cuadra 3",
+    "trazo": [
+      [11.225975, -74.189367],
+      [11.22577, -74.189622]
+    ]
+  },
+  "UNI-04": {
+    "zona": "unimagdalena",
+    "tipo": "arterial",
+    "nombre": "Calle 29H - Cuadra 4",
+    "trazo": [
+      [11.22577, -74.189622],
+      [11.225118, -74.190463]
+    ]
+  },
+  "UNI-05": {
+    "zona": "unimagdalena",
+    "tipo": "arterial",
+    "nombre": "Calle 29H - Cuadra 5",
+    "trazo": [
+      [11.225118, -74.190463],
+      [11.224567, -74.191191]
+    ]
+  },
+  "UNI-06": {
+    "zona": "unimagdalena",
+    "tipo": "arterial",
+    "nombre": "Calle 29H - Cuadra 6",
+    "trazo": [
+      [11.224567, -74.191191],
+      [11.224375, -74.191457]
+    ]
+  },
+  "UNI-07": {
+    "zona": "unimagdalena",
+    "tipo": "arterial",
+    "nombre": "Calle 29H - Cuadra 7",
+    "trazo": [
+      [11.224375, -74.191457],
+      [11.223875, -74.192108]
+    ]
+  },
+  "UNI-08": {
+    "zona": "unimagdalena",
+    "tipo": "arterial",
+    "nombre": "Calle 29H - Cuadra 8",
+    "trazo": [
+      [11.223875, -74.192108],
+      [11.223357, -74.192771]
+    ]
+  },
+  "UNI-09": {
+    "zona": "unimagdalena",
+    "tipo": "arterial",
+    "nombre": "Calle 29H - Cuadra 9",
+    "trazo": [
+      [11.223357, -74.192771],
+      [11.222965, -74.193297]
     ]
   }
 }
