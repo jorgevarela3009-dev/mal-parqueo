@@ -667,3 +667,302 @@ footer {
 
 }
 
+/* =================================
+   RESUMEN OPERATIVO
+   ================================= */
+
+#resumen-operativo {
+    margin: 20px;
+    padding: 24px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px #00000008;
+    color: #334155;
+}
+
+.resumen-encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.resumen-encabezado h2 {
+    margin: 0 0 5px;
+    color: #12334a;
+    font-size: 23px;
+}
+
+.resumen-encabezado p {
+    margin: 0;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.resumen-contexto {
+    background: #f8fafc;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    font-size: 13px;
+}
+
+.resumen-contexto p {
+    margin: 6px 0;
+}
+
+.resumen-indicadores {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+#resumen-operativo h3 {
+    color: #12334a;
+    font-size: 17px;
+    margin: 25px 0 12px;
+}
+
+.resumen-descripcion {
+    color: #64748b;
+    font-size: 13px;
+}
+
+
+/* =================================
+   GRÁFICO DEL RANKING
+   ================================= */
+
+#grafico-ranking {
+    padding: 15px;
+    background: #f8fafc;
+    border-radius: 10px;
+}
+
+.ranking-fila {
+    margin-bottom: 18px;
+}
+
+.ranking-fila:last-child {
+    margin-bottom: 0;
+}
+
+.ranking-encabezado {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 14px;
+    margin-bottom: 7px;
+}
+
+.ranking-fondo {
+    background: #e2e8f0;
+    border-radius: 6px;
+    height: 23px;
+    overflow: hidden;
+}
+
+.ranking-barra {
+    height: 100%;
+    background: #0d9488;
+    border-radius: 6px;
+    transition: width 0.3s ease;
+}
+
+.ranking-prioritaria {
+    background: #dc2626;
+}
+
+.ranking-fila small {
+    display: block;
+    margin-top: 6px;
+    font-size: 12px;
+    color: #64748b;
+}
+
+
+/* =================================
+   TABLA DE RESULTADOS
+   ================================= */
+
+.tabla-resumen-contenedor {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.tabla-resumen {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.tabla-resumen th {
+    background: #12334a;
+    color: #ffffff;
+    padding: 12px 9px;
+    text-align: left;
+}
+
+.tabla-resumen td {
+    padding: 12px 9px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.tabla-resumen tbody tr:nth-child(even) {
+    background: #f8fafc;
+}
+
+.tabla-resumen tbody tr:hover {
+    background: #ecfdf5;
+}
+
+
+/* =================================
+   RECOMENDACIONES
+   ================================= */
+
+.recomendacion-item {
+    background: #f0fdfa;
+    border-left: 4px solid #0d9488;
+    padding: 14px;
+    border-radius: 7px;
+    margin-bottom: 12px;
+}
+
+.recomendacion-item strong {
+    color: #115e59;
+    font-size: 15px;
+}
+
+.recomendacion-item p {
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 8px 0 0;
+}
+
+.nota-resumen {
+    font-size: 11px;
+    color: #64748b;
+    font-style: italic;
+    margin-top: 20px;
+}
+
+
+/* =================================
+   DISEÑO RESPONSIVO
+   ================================= */
+
+@media (max-width: 600px) {
+
+    #resumen-operativo {
+        margin: 10px;
+        padding: 15px;
+    }
+
+    .resumen-encabezado {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .resumen-indicadores {
+        grid-template-columns: 1fr;
+    }
+
+    .tabla-resumen {
+        min-width: 700px;
+    }
+
+    #btn-imprimir-resumen {
+        width: 100%;
+    }
+
+}
+
+
+/* =================================
+   IMPRESIÓN DEL RESUMEN
+   ================================= */
+
+@media print {
+
+    @page {
+        size: A4 landscape;
+        margin: 12mm;
+    }
+
+    html,
+    body {
+        background: #ffffff !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    body * {
+        visibility: hidden;
+    }
+
+    #resumen-operativo,
+    #resumen-operativo * {
+        visibility: visible;
+    }
+
+    body > :not(#resumen-operativo) {
+        display: none !important;
+    }
+
+    #resumen-operativo {
+        display: block !important;
+        position: static !important;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        border: none;
+        box-shadow: none;
+        box-sizing: border-box;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    #btn-imprimir-resumen {
+        display: none !important;
+    }
+
+    .resumen-indicadores {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .tabla-resumen-contenedor {
+        overflow: visible;
+    }
+
+    .tabla-resumen {
+        min-width: 0;
+        font-size: 10px;
+    }
+
+    .tabla-resumen th,
+    .tabla-resumen td {
+        padding: 7px;
+    }
+
+    .ranking-fila,
+    .recomendacion-item,
+    .tarjeta-indicador,
+    .tabla-resumen tr {
+        break-inside: avoid;
+    }
+
+    .tabla-resumen thead {
+        display: table-header-group;
+    }
+
+    #resumen-operativo h3 {
+        break-after: avoid;
+    }
+
+}
+
+
