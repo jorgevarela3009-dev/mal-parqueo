@@ -354,3 +354,117 @@ footer {
     box-shadow: 0 2px 5px #0003;
 }
 
+/* Información automática de la vía */
+
+#info-via {
+    padding: 15px;
+    margin: 12px 0;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-left: 4px solid #059669;
+    border-radius: 10px;
+}
+
+#info-via h3,
+#info-criticidad h3 {
+    margin: 0 0 12px;
+    font-size: 15px;
+}
+
+.dato-via {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.dato-via span {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.dato-via strong {
+    color: #12334a;
+    font-size: 14px;
+    text-transform: capitalize;
+}
+
+#via-estado {
+    color: #047857;
+    font-size: 12px;
+    font-weight: bold;
+    margin: 8px 0 0;
+}
+
+/* Ubicación fuera de la zona */
+
+#info-via.via-invalida {
+    background: #fef2f2;
+    border-color: #fecaca;
+    border-left-color: #dc2626;
+}
+
+#info-via.via-invalida #via-estado {
+    color: #b91c1c;
+}
+
+/* Criticidad automática */
+
+#info-criticidad {
+    padding: 14px;
+    margin: 12px 0;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: #f8fafc;
+}
+
+.resumen-criticidad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.resumen-criticidad div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.resumen-criticidad span {
+    font-size: 11px;
+}
+
+.resumen-criticidad strong {
+    font-size: 14px;
+}
+
+#info-criticidad[data-nivel="Bajo"] {
+    background: #ecfdf5;
+    border-color: #86efac;
+    color: #166534;
+}
+
+#info-criticidad[data-nivel="Medio"] {
+    background: #fffbeb;
+    border-color: #fcd34d;
+    color: #92400e;
+}
+
+#info-criticidad[data-nivel="Alto"] {
+    background: #fef2f2;
+    border-color: #fca5a5;
+    color: #991b1b;
+}
+
+#btn-guardar:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+@media (max-width: 600px) {
+    .resumen-criticidad {
+        grid-template-columns: 1fr;
+    }
+}
+
