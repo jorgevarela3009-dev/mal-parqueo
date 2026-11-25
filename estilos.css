@@ -280,3 +280,65 @@ footer {
         padding: 15px;
     }
 }
+
+/* Herramienta de delimitación de vías */
+
+#panel-coordenadas {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-left: 5px solid #0d9488;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 0 20px 12px;
+}
+
+#panel-coordenadas h2 {
+    color: #12334a;
+    font-size: 18px;
+    margin: 0 0 8px;
+}
+
+#panel-coordenadas p {
+    font-size: 13px;
+    color: #64748b;
+    margin: 8px 0;
+}
+
+#lista-coordenadas {
+    width: 100%;
+    resize: vertical;
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #334155;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+#total-coordenadas {
+    font-weight: bold;
+    color: #0d9488 !important;
+}
+
+#btn-coordenadas {
+    margin-left: auto;
+}
+
+@media (max-width: 600px) {
+
+    #panel-coordenadas {
+        margin: 0 10px 10px;
+    }
+
+    #btn-coordenadas {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    #panel-coordenadas button {
+        flex: 1;
+    }
+
+}
+
