@@ -21,7 +21,21 @@ async function iniciar() {
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19, attribution: "&copy; OpenStreetMap",
   }).addTo(estado.mapa);
+// Ajustar el mapa a todas las vías estudiadas.
 
+const trazos = Object.values(vias)
+    .filter(v => Array.isArray(v.trazo))
+    .flatMap(v => v.trazo);
+
+if (trazos.length > 0) {
+    estado.mapa.fitBounds(
+        L.latLngBounds(trazos),
+        {
+            padding: [35, 35],
+            maxZoom: 17
+        }
+    );
+}
   estado.mapa.createPane("hexagonos");
   estado.mapa.getPane("hexagonos").style.zIndex = 390;
   estado.mapa.createPane("puntos");
@@ -43,13 +57,43 @@ async function iniciar() {
 }
 
 // Junta los reportes precargados y los del navegador, sin repetir ids, y redibuja.
+
+// Protege los textos antes de mostrarlos como HTML.
+
+function escaparHTML(valor) {
+
+    return String(valor ?? "").replace(
+        /[&<>"']/g,
+        caracter => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        })[caracter]
+    );
+
+}
+
 function dibujar() {
   const maximo = puntajeMaximo(estado.criterios);
   const vistos = new Set();
   const datos = [];
   for (const r of [...estado.base, ...leerLocales()]) {
-    if (vistos.has(r.id)) continue;
-    vistos.add(r.id);
+if (!r || typeof r !== "object") continue;
+
+if (typeof r.id !== "string" ||
+    !r.id.trim()) continue;
+
+if (!Number.isFinite(r.lat) ||
+    !Number.isFinite(r.lng)) continue;
+
+if (Math.abs(r.lat) > 90 ||
+    Math.abs(r.lng) > 180) continue;
+
+if (vistos.has(r.id)) continue;
+
+vistos.add(r.id);
     const c = calcularCriticidad(r, estado.vias, estado.criterios);
     if (c) datos.push({ ...r, criticidad: c });
   }
@@ -60,10 +104,16 @@ function dibujar() {
       radius: 7, color: "#fff", weight: 1.5, bubblingMouseEvents: false,
       fillColor: COLORES[r.criticidad.nivel], fillOpacity: 0.9,
       pane: "puntos",
+
     }).bindPopup(
-      `<b>${r.cuadra}</b><br>${r.categoria_otro || r.categoria} · ${r.actor_otro || r.actor}<br>${r.fecha_hora.replace("T", " ")}<br>` +
-      `Criticidad: <b>${r.criticidad.puntaje} (${r.criticidad.nivel})</b>`
+      `<b>${escaparHTML(r.cuadra)}</b><br>` +
+      `${escaparHTML(r.categoria_otro || r.categoria)} · ` +
+      `${escaparHTML(r.actor_otro || r.actor)}<br>` +
+      `${escaparHTML(r.fecha_hora.replace("T", " "))}<br>` +
+      `Criticidad: <b>${r.criticidad.puntaje} ` +
+      `(${escaparHTML(r.criticidad.nivel)})</b>`
     ).addTo(estado.capaPuntos);
+
   }
   dibujarHexagonos(datos);
   document.getElementById("conteo").textContent = datos.length + " reportes";
@@ -97,7 +147,7 @@ function dibujarHexagonos(datos) {
       `<b>Hexágono de ${ANCHO_HEX} m</b><br>` +
       `Reportes: <b>${h.cantidad}</b><br>` +
       `Suma de criticidad: <b>${h.suma}</b><br>` +
-      `<small>Ids: ${h.ids.join(", ")}</small>`
+      `<small>Ids: ${escaparHTML(h.ids.join(", "))}</small>`
     ).addTo(estado.capaHex);
   }
   if (leyenda) leyenda.hidden = false;
