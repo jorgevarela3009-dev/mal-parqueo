@@ -73,10 +73,57 @@
                    id="chk-hex">
             Hexágonos
         </label>
-
+<button type="button"
+        id="btn-coordenadas"
+        class="sec">
+    Capturar coordenadas
+</button>
     </section>
 
     <!-- Mapa y leyenda -->
+    
+<section id="panel-coordenadas" hidden>
+
+    <h2>Delimitación de vías estudiadas</h2>
+
+    <p>
+        Selecciona las intersecciones del recorrido
+        haciendo clic sobre el mapa.
+    </p>
+
+    <p id="total-coordenadas">
+        0 puntos seleccionados
+    </p>
+
+    <textarea id="lista-coordenadas"
+              rows="4"
+              readonly
+              placeholder="Aquí aparecerán las coordenadas">
+    </textarea>
+
+    <div class="fila">
+
+        <button type="button"
+                id="btn-deshacer-punto"
+                class="sec">
+            Deshacer punto
+        </button>
+
+        <button type="button"
+                id="btn-limpiar-puntos"
+                class="sec">
+            Limpiar
+        </button>
+
+        <button type="button"
+                id="btn-copiar-puntos">
+            Copiar coordenadas
+        </button>
+
+    </div>
+
+</section>
+
 
     <main class="contenedor-mapa">
 
@@ -203,6 +250,7 @@
     <script src="hexagonos.js"></script>
     <script src="mapa.js"></script>
     <script src="captura.js"></script>
+    <script src="coordenadas.js"></script>
 
 </body>
 </html>
