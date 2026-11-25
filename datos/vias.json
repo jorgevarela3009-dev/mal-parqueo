@@ -1,4 +1,12 @@
+
 {
-  "EJEMPLO-CUADRA-1": { "zona": "unimagdalena", "tipo": "arterial", "nombre": "Reemplazar por su cuadra real" },
-  "EJEMPLO-CUADRA-2": { "zona": "unimagdalena", "tipo": "secundaria", "nombre": "Reemplazar por su cuadra real" }
+  "UNI-TRAMO-01": {
+    "zona": "unimagdalena",
+    "tipo": "arterial",
+    "nombre": "Corredor frente a la Universidad del Magdalena",
+    "trazo": [
+      [11.226242, -74.188591],
+      [11.224051, -74.191886]
+    ]
+  }
 }
