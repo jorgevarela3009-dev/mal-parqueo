@@ -71,6 +71,8 @@ window.listo.then(() => {
             : "Capturar coordenadas";
 
         if (modoCoordenadas) {
+            limpiarUbicacion();
+            activarRegistro(false);
             document.getElementById("panel").hidden = true;
         }
 

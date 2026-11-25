@@ -48,7 +48,15 @@ definitiva en campo.
 - Conteo de cuadras con incidentes.
 - Distribución de incidentes por nivel de criticidad.
 - Actualización simultánea del mapa de calor,
-  puntos individuales y hexágonos según los filtros.
+- puntos individuales y hexágonos según los filtros.
+- Ranking de las cinco cuadras con mayor
+  puntaje acumulado de criticidad.
+- Gráfico de barras de cuadras prioritarias.
+- Análisis de categorías y franjas predominantes.
+- Recomendaciones operativas basadas en reglas.
+- Resumen operativo conectado con los filtros.
+- Impresión y generación de PDF desde el navegador.
+  
 
 ## Tecnologías utilizadas
 
@@ -94,6 +102,8 @@ decisiones iniciales sujetas a validación de campo.
 - hexagonos.js: agrupación espacial.
 - datos/: archivos de configuración y reportes.
 - filtros.js: procesamiento de filtros e indicadores.
+- resumen.js: ranking de cuadras,
+  recomendaciones e impresión del resumen.
 
 ## Almacenamiento de información
 
@@ -106,9 +116,6 @@ de datos ni requiere un backend.
 ## Funcionalidades pendientes
 
 - Fotografías opcionales anonimizadas.
-- Ranking de las cinco cuadras más críticas.
-- Recomendaciones operativas.
-- Impresión del resumen.
 - Importación y exportación de reportes JSON.
 - Validación y recolección de datos de campo.
 

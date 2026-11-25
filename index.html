@@ -193,6 +193,7 @@
         class="sec">
     Capturar coordenadas
 </button>
+        <p id="ayuda-mapa" class="ayuda-mapa" aria-live="polite">Explora el mapa o pulsa Reportar incidente para registrar una ubicación.</p>
     </section>
 
     <!-- Mapa y leyenda -->
@@ -389,6 +390,152 @@
 
 
 
+<!-- Resumen operativo -->
+
+<section id="resumen-operativo">
+
+    <div class="resumen-encabezado">
+
+        <div>
+
+            <h2>Resumen operativo</h2>
+
+            <p>
+                Análisis de movilidad y espacio público
+            </p>
+
+        </div>
+
+        <button type="button"
+                id="btn-imprimir-resumen">
+
+            Imprimir resumen
+
+        </button>
+
+    </div>
+
+    <div class="resumen-contexto">
+
+        <strong>
+            Universidad del Magdalena
+        </strong>
+
+        <p>
+            Zona de estudio: Calle 29H,
+            sector universitario.
+        </p>
+
+        <p>
+            Fecha de generación:
+            <span id="res-fecha"></span>
+        </p>
+
+        <p>
+            Filtros aplicados:
+            <span id="res-filtros"></span>
+        </p>
+
+    </div>
+
+    <div class="resumen-indicadores">
+
+        <div class="tarjeta-indicador">
+
+            <span>Incidentes analizados</span>
+
+            <strong id="res-total-incidentes">
+                0
+            </strong>
+
+        </div>
+
+        <div class="tarjeta-indicador">
+
+            <span>Criticidad acumulada</span>
+
+            <strong id="res-total-puntos">
+                0
+            </strong>
+
+        </div>
+
+        <div class="tarjeta-indicador indicador-alto">
+
+            <span>Cuadra prioritaria</span>
+
+            <strong id="res-cuadra-prioritaria">
+                Sin datos
+            </strong>
+
+        </div>
+
+    </div>
+
+    <p id="res-excluidos" class="nota-resumen" hidden></p>
+    <h3>Top 5 de cuadras críticas</h3>
+
+    <p class="resumen-descripcion">
+
+        Ranking ordenado por puntaje acumulado
+        de criticidad de los incidentes registrados.
+
+    </p>
+
+    <div id="grafico-ranking"></div>
+
+    <h3>Detalle de cuadras prioritarias</h3>
+
+    <div class="tabla-resumen-contenedor">
+
+        <table class="tabla-resumen">
+
+            <thead>
+
+                <tr>
+
+                    <th>Posición</th>
+
+                    <th>Cuadra</th>
+
+                    <th>Incidentes</th>
+
+                    <th>Puntaje acumulado</th>
+
+                    <th>Promedio</th>
+
+                    <th>Incidentes altos</th>
+
+                    <th>Categoría predominante</th>
+
+                    <th>Franja predominante</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="tabla-ranking"></tbody>
+
+        </table>
+
+    </div>
+
+    <h3>Recomendaciones operativas</h3>
+
+    <div id="recomendaciones-resumen"></div>
+
+    <p class="nota-resumen">
+
+        Las recomendaciones se generan mediante
+        reglas basadas en los incidentes registrados.
+        Constituyen propuestas académicas de apoyo
+        a la toma de decisiones y deben validarse
+        en campo.
+
+    </p>
+
+</section>
+
     <!-- Pie de página -->
 
     <footer>
@@ -413,6 +560,7 @@
     <script src="coordenadas.js"></script>
     <script src="vias-mapa.js"></script>
     <script src="filtros.js"></script>
+    <script src="resumen.js"></script>
 
 </body>
 </html>
