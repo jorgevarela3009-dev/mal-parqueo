@@ -1003,3 +1003,6 @@ footer {
     #panel { width: calc(100% - 24px); }
     #leyenda-hex { max-width: 160px; font-size: 10px; }
 }
+
+/* Fotografías e intercambio */
+.foto-caja,.intercambio{border:1px solid #dbe3eb;border-radius:12px;padding:16px;background:#fff;margin:16px 0;min-width:0}.intercambio{margin:20px}.intercambio h2{margin:0 0 10px;color:#12334a}.intercambio p,.foto-caja p{font-size:13px;line-height:1.5}.foto-caja input[type=file]{max-width:100%;margin:8px 0 12px}.foto-caja legend{font-weight:600;color:#12334a}#foto-canvas{display:block;max-width:100%;height:auto;touch-action:none;cursor:crosshair;margin:12px 0;border:1px solid #cbd5e1}.foto-popup{display:block;max-width:220px;max-height:180px;margin-top:8px;object-fit:contain}.intercambio .fila{display:flex;flex-wrap:wrap;gap:12px}#foto-quitar{margin-top:12px}@media(max-width:600px){.intercambio{margin:10px}}
