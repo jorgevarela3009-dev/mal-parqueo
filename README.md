@@ -136,3 +136,11 @@ Enlace: pendiente de incorporar.
 
 El desarrollo se organiza mediante ramas de trabajo,
 commits y solicitudes de integración (Pull Requests).
+
+## Fotografías e intercambio de reportes
+
+- `reportes.js`: editor manual de fotografías (cobertura opaca de rostros y placas), reducción a máximo 800 píxeles por lado, compresión JPEG y transferencia JSON.
+- Solo se guarda la imagen editada y confirmada. No se guarda la fotografía original.
+- Exportación de todos los registros sin filtros; importación con validación de ubicación, categoría, actor, fecha y deduplicación por ID. La criticidad se recalcula.
+- Las fotografías importadas deben revisarse previamente por el equipo; no hay detección automática de datos personales.
+- El almacenamiento local tiene una cuota limitada. Exportar copias de seguridad regularmente.

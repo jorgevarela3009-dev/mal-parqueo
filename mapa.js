@@ -174,23 +174,18 @@ function dibujar() {
 
             pane: "puntos"
 
-        }).bindPopup(
-
-            `<b>${escaparHTML(r.cuadra)}</b><br>` +
-
-            `${escaparHTML(r.categoria_otro || categoria)}<br>` +
-
-            `Actor: ${escaparHTML(r.actor_otro || actor)}<br>` +
-
-            `Fecha: ${escaparHTML(r.fecha_hora.replace("T", " "))}<br>` +
-
-            `Franja: ${escaparHTML(r.criticidad.franja)}<br>` +
-
-            `Criticidad: <b>${r.criticidad.puntaje} ` +
-
-            `(${escaparHTML(r.criticidad.nivel)})</b>`
-
-        ).addTo(estado.capaPuntos);
+        }).bindPopup(() => {
+            const ficha = document.createElement('div');
+            ficha.className = 'ficha-incidente';
+            ficha.innerHTML = `<h3>Incidente · ${escaparHTML(r.cuadra)}</h3>` +
+                `<dl><dt>Categoría</dt><dd>${escaparHTML(r.categoria_otro || categoria)}</dd>` +
+                `<dt>Actor</dt><dd>${escaparHTML(r.actor_otro || actor)}</dd>` +
+                `<dt>Fecha y hora</dt><dd>${escaparHTML(r.fecha_hora.replace('T',' '))}</dd>` +
+                `<dt>Franja</dt><dd>${r.criticidad.franja === 'pico' ? 'Hora pico' : 'Hora valle'}</dd>` +
+                `<dt>Criticidad</dt><dd><strong>${r.criticidad.puntaje} puntos · ${escaparHTML(r.criticidad.nivel)}</strong></dd></dl>`;
+            ficha.append(fotoPopup(r));
+            return ficha;
+        }, {maxWidth: 300, minWidth: 190, maxHeight: 420, className: 'popup-incidente'}).addTo(estado.capaPuntos);
 
     }
 

@@ -254,6 +254,8 @@ if (!Object.hasOwn(ACTORES, act)) {
         return msg("Describe el actor.");
     }
 
+    let foto;
+    try { foto = fotoParaGuardar(); } catch(e) { return msg(e.message); }
     const rep = {
 
         id: "CI-" + crypto.randomUUID(),
@@ -274,7 +276,7 @@ if (!Object.hasOwn(ACTORES, act)) {
 
         categoria: cat,
         actor: act,
-        foto: "",
+        foto,
 
         categoria_otro: cat === "otro"
             ? $("f-categoria-otro").value.trim()
@@ -303,11 +305,12 @@ if (!Object.hasOwn(ACTORES, act)) {
     try {
         guardarLocales([...leerLocales(), rep]);
     } catch (e) {
-        return msg("No se pudo guardar el reporte.");
+        return msg("No se pudo guardar. Revisa el espacio disponible o elimina la foto e inténtalo nuevamente.");
     }
 
     dibujar();
-
+    activarRegistro(false);
+    limpiarFoto();
     limpiarUbicacion();
 
     $("f-hora").value = ahoraLocal();
@@ -323,6 +326,9 @@ if (!Object.hasOwn(ACTORES, act)) {
     $("f-categoria").selectedIndex = 0;
     $("f-actor").selectedIndex = 0;
 
+    $("panel").hidden = true;
+    $("ayuda-mapa").textContent = "Reporte guardado en " + rep.cuadra + ". Selecciona un punto para consultar su información.";
+    $("mapa").scrollIntoView({block: "center", behavior: "smooth"});
     msg(
         "Reporte guardado en " + rep.cuadra +
         ". Criticidad: " + c.puntaje +
@@ -377,6 +383,7 @@ window.listo.then(() => {
             $("btn-coordenadas").click();
         }
 
+        limpiarFoto();
         limpiarUbicacion();
 
         $("f-hora").value = ahoraLocal();
@@ -385,7 +392,7 @@ window.listo.then(() => {
 
         activarRegistro(true);
         msg("Toca el mapa o usa tu ubicación.");
-        $("panel").scrollIntoView({block: "start", behavior: "smooth"});
+        $("mapa").scrollIntoView({block: "center", behavior: "smooth"});
 
     });
 
@@ -393,6 +400,7 @@ window.listo.then(() => {
 
         limpiarUbicacion();
 
+        limpiarFoto();
         activarRegistro(false);
         $("panel").hidden = true;
 
@@ -413,6 +421,7 @@ window.listo.then(() => {
 
         const solicitud = consulta;
 
+        if (!navigator.geolocation) return msg("GPS no disponible. Selecciona la ubicación en el mapa.");
         navigator.geolocation.getCurrentPosition(
 
             (p) => {

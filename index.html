@@ -12,7 +12,7 @@
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 
-    <link rel="stylesheet" href="estilos.css">
+    <link rel="stylesheet" href="estilos.css?v=3">
 </head>
 
 <body>
@@ -340,7 +340,11 @@
         Es un registro de campo del equipo
     </label>
 
-    <!-- Criticidad automática -->
+    <fieldset class="foto-caja"><legend>Fotografía opcional</legend>
+<div class="foto-opciones"><label>Seleccionar de la galería<input id="foto-archivo" type="file" accept="image/jpeg,image/png,image/webp"></label><label>Tomar fotografía<input id="foto-camara" type="file" accept="image/jpeg,image/png,image/webp" capture="environment"></label></div>
+<div id="foto-editor" hidden><p>Cubre completamente rostros y placas arrastrando sobre la imagen.</p><canvas id="foto-canvas" aria-label="Editor de fotografía"></canvas><label><input type="checkbox" id="foto-confirmar"> Confirmo que no se ven rostros ni placas.</label></div>
+<button type="button" class="sec" id="foto-quitar">Eliminar fotografía</button><p id="foto-msg" aria-live="polite"></p></fieldset>
+<!-- Criticidad automática -->
 
     <div id="info-criticidad" hidden>
 
@@ -390,6 +394,7 @@
 
 
 
+<section class="intercambio"><h2>Gestión de reportes</h2><p>Importa observaciones del equipo o descarga una copia de todos los registros. No compartas fotografías sin anonimizar.</p><div class="fila"><button type="button" id="btn-exportar">Exportar JSON</button><button type="button" class="sec" id="btn-importar">Importar JSON</button><input type="file" id="archivo-importar" accept=".json,application/json" hidden></div><p id="intercambio-msg" aria-live="polite"></p></section>
 <!-- Resumen operativo -->
 
 <section id="resumen-operativo">
@@ -555,12 +560,13 @@
     <script src="criticidad.js"></script>
     <script src="via.js"></script>
     <script src="hexagonos.js"></script>
-    <script src="mapa.js"></script>
-    <script src="captura.js"></script>
+    <script src="mapa.js?v=3"></script>
+    <script src="captura.js?v=3"></script>
     <script src="coordenadas.js"></script>
     <script src="vias-mapa.js"></script>
     <script src="filtros.js"></script>
     <script src="resumen.js"></script>
+    <script src="reportes.js?v=3"></script>
 
 </body>
 </html>
