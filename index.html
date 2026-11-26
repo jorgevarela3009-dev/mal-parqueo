@@ -340,7 +340,11 @@
         Es un registro de campo del equipo
     </label>
 
-    <!-- Criticidad automática -->
+    <fieldset class="foto-caja"><legend>Fotografía opcional</legend>
+<label for="foto-archivo">Seleccionar o tomar fotografía</label><input id="foto-archivo" type="file" accept="image/jpeg,image/png,image/webp">
+<div id="foto-editor" hidden><p>Cubre completamente rostros y placas arrastrando sobre la imagen.</p><canvas id="foto-canvas" aria-label="Editor de fotografía"></canvas><label><input type="checkbox" id="foto-confirmar"> Confirmo que no se ven rostros ni placas.</label></div>
+<button type="button" class="sec" id="foto-quitar">Eliminar fotografía</button><p id="foto-msg" aria-live="polite"></p></fieldset>
+<!-- Criticidad automática -->
 
     <div id="info-criticidad" hidden>
 
@@ -390,6 +394,7 @@
 
 
 
+<section class="intercambio"><h2>Gestión de reportes</h2><p>Importa observaciones del equipo o descarga una copia de todos los registros. No compartas fotografías sin anonimizar.</p><div class="fila"><button type="button" id="btn-exportar">Exportar JSON</button><button type="button" class="sec" id="btn-importar">Importar JSON</button><input type="file" id="archivo-importar" accept=".json,application/json" hidden></div><p id="intercambio-msg" aria-live="polite"></p></section>
 <!-- Resumen operativo -->
 
 <section id="resumen-operativo">
@@ -561,6 +566,7 @@
     <script src="vias-mapa.js"></script>
     <script src="filtros.js"></script>
     <script src="resumen.js"></script>
+    <script src="reportes.js"></script>
 
 </body>
 </html>

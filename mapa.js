@@ -188,7 +188,8 @@ function dibujar() {
 
             `Criticidad: <b>${r.criticidad.puntaje} ` +
 
-            `(${escaparHTML(r.criticidad.nivel)})</b>`
+            `(${escaparHTML(r.criticidad.nivel)})</b>` +
+            (typeof fotoPopup === "function" ? fotoPopup(r) : "")
 
         ).addTo(estado.capaPuntos);
 

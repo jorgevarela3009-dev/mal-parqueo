@@ -254,6 +254,8 @@ if (!Object.hasOwn(ACTORES, act)) {
         return msg("Describe el actor.");
     }
 
+    let foto;
+    try { foto = fotoParaGuardar(); } catch(e) { return msg(e.message); }
     const rep = {
 
         id: "CI-" + crypto.randomUUID(),
@@ -274,7 +276,7 @@ if (!Object.hasOwn(ACTORES, act)) {
 
         categoria: cat,
         actor: act,
-        foto: "",
+        foto,
 
         categoria_otro: cat === "otro"
             ? $("f-categoria-otro").value.trim()
@@ -303,11 +305,11 @@ if (!Object.hasOwn(ACTORES, act)) {
     try {
         guardarLocales([...leerLocales(), rep]);
     } catch (e) {
-        return msg("No se pudo guardar el reporte.");
+        return msg("No se pudo guardar. Revisa el espacio disponible o elimina la foto e inténtalo nuevamente.");
     }
 
     dibujar();
-
+    limpiarFoto();
     limpiarUbicacion();
 
     $("f-hora").value = ahoraLocal();
@@ -377,6 +379,7 @@ window.listo.then(() => {
             $("btn-coordenadas").click();
         }
 
+        limpiarFoto();
         limpiarUbicacion();
 
         $("f-hora").value = ahoraLocal();
@@ -393,6 +396,7 @@ window.listo.then(() => {
 
         limpiarUbicacion();
 
+        limpiarFoto();
         activarRegistro(false);
         $("panel").hidden = true;
 
