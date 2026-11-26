@@ -1,146 +1,32 @@
+# MoviTech SM | Reto 2 — Movilidad Santa Marta
+Universidad del Magdalena · Ingeniería de Sistemas · Introducción a la Ingeniería de Sistemas · 2026-II · Docente Aquiles Cohen.
 
-# Movilidad Santa Marta
+## Equipo (roles propuestos, por confirmar)
+- Jorge Varela: integrador del mapa e instrucciones para IA.
+- Juan Peña: analista de campo y privacidad; sustentación principal.
+- Daniel Narváez: lógica y clasificación.
+- Nesvell Briceño: interfaz y documentación.
 
-## Reto 2: Control de mal parqueo e invasión del espacio público
+## Abrir el prototipo
+[GitHub Pages](https://jorgevarela3009-dev.github.io/mal-parqueo/) · [Repositorio](https://github.com/jorgevarela3009-dev/mal-parqueo).
+Abrir con conexión a internet. No abrir index.html directamente mediante file:// porque fetch necesita HTTP. No requiere backend.
 
-Universidad del Magdalena
-Ingeniería de Sistemas
-Introducción a la Ingeniería de Sistemas
-Periodo académico 2026-II
+## Uso
+Activar registro, seleccionar punto o GPS, categoría, actor y hora; adjuntar foto opcional y anonimizarla; guardar. Consultar calor, puntos, filtros y ranking. Exportar/importar JSON para reunir dispositivos. Los datos nuevos quedan en localStorage; la base precargada se carga desde datos/reportes.json. Los IDs se deduplican.
 
-## Descripción del proyecto
+## Datos y reglas
+Nueve segmentos Calle 29H (UNI-01 a UNI-09), configurados como arteriales, clasificación por confirmar. 30 entradas, 25 pico, 5 valle, 17 invasión de andén, 13 doble fila; 243 puntos. Todas altas con los pesos actuales. Tres jornadas informadas, fechas exactas desconocidas: fecha_hora conserva fecha técnica y hora real informada. No permite análisis diario. Registros 17/29 comparten foto, hora y cuadra; 8/30 requieren revisión por similitud. No se acredita todavía independencia de los 30. Fotos públicas con pixelado integral preventivo; revisar antes de publicar.
 
-Aplicativo web orientado al registro, visualización
-y análisis de incidentes relacionados con el mal
-parqueo y la invasión del espacio público en Santa Marta.
+Criticidad = categoría + vía + franja. Pesos y rangos en criterios.json; pico 06:30–08:30, 11:30–14:00, 17:00–19:30. Bajo 0–4, Medio 5–6, Alto 7–9. Ranking por suma de puntos, luego cantidad e ID; recomendaciones por categoría y franja predominantes.
 
-El proyecto busca identificar sectores críticos
-mediante información georreferenciada y criterios
-de valoración de los incidentes.
+## Archivos
+- index.html / estilos.css: interfaz.
+- captura.js / via.js: captura y detección de cuadra.
+- reportes.js: almacenamiento, fotos e intercambio.
+- criticidad.js / filtros.js / resumen.js: análisis.
+- mapa.js / vias-mapa.js / hexagonos.js / coordenadas.js: visualización y apoyo geográfico.
+- datos/: configuración, vías, criterios y reportes.
+- documentos/: evidencia, arquitectura y bitácora.
 
-## Zona de estudio
-
-Corredor vial de la Calle 29H, sector de la
-Universidad del Magdalena.
-
-Se han delimitado nueve segmentos identificados
-desde UNI-01 hasta UNI-09, pendientes de validación
-definitiva en campo.
-
-## Funcionalidades implementadas
-
-- Registro georreferenciado de incidentes.
-- Selección de ubicación mediante mapa o GPS.
-- Identificación automática de la cuadra.
-- Validación de la zona de estudio.
-- Clasificación de incidentes y actores.
-- Identificación de horas pico y valle.
-- Cálculo automático de criticidad.
-- Visualización mediante mapa de calor.
-- Visualización de puntos individuales.
-- Visualización mediante hexágonos.
-- Visualización de las vías estudiadas.
-- Herramienta de captura de coordenadas.
-- Almacenamiento local de reportes.
-- Filtros dinámicos por cuadra, categoría, actor,
-  franja horaria y nivel de criticidad.
-- Indicadores estadísticos de reportes visibles.
-- Conteo de cuadras con incidentes.
-- Distribución de incidentes por nivel de criticidad.
-- Actualización simultánea del mapa de calor,
-- puntos individuales y hexágonos según los filtros.
-- Ranking de las cinco cuadras con mayor
-  puntaje acumulado de criticidad.
-- Gráfico de barras de cuadras prioritarias.
-- Análisis de categorías y franjas predominantes.
-- Recomendaciones operativas basadas en reglas.
-- Resumen operativo conectado con los filtros.
-- Impresión y generación de PDF desde el navegador.
-  
-
-## Tecnologías utilizadas
-
-- HTML5.
-- CSS3.
-- JavaScript.
-- Leaflet.
-- Leaflet.heat.
-- OpenStreetMap.
-- JSON.
-- LocalStorage.
-- GitHub.
-- GitHub Pages.
-
-## Cálculo de criticidad
-
-La criticidad se obtiene sumando los pesos
-correspondientes a la categoría del incidente,
-el tipo de vía y la franja horaria.
-
-Niveles:
-
-- Bajo: 0 a 4 puntos.
-- Medio: 5 a 6 puntos.
-- Alto: 7 a 9 puntos.
-
-Los parámetros se encuentran en datos/criterios.json.
-
-La clasificación arterial de los segmentos y
-la tolerancia geográfica de 25 metros son
-decisiones iniciales sujetas a validación de campo.
-
-## Estructura del proyecto
-
-- index.html: interfaz principal.
-- estilos.css: diseño visual.
-- mapa.js: visualización geográfica.
-- captura.js: registro de incidentes.
-- criticidad.js: cálculo de criticidad.
-- via.js: identificación de cuadras.
-- vias-mapa.js: visualización de vías.
-- coordenadas.js: delimitación geográfica.
-- hexagonos.js: agrupación espacial.
-- datos/: archivos de configuración y reportes.
-- filtros.js: procesamiento de filtros e indicadores.
-- resumen.js: ranking de cuadras,
-  recomendaciones e impresión del resumen.
-
-## Almacenamiento de información
-
-Los reportes registrados por el usuario se guardan
-en el almacenamiento local de su navegador.
-
-El aplicativo no utiliza un servidor de base
-de datos ni requiere un backend.
-
-## Funcionalidades pendientes
-
-- Fotografías opcionales anonimizadas.
-- Importación y exportación de reportes JSON.
-- Validación y recolección de datos de campo.
-
-## Integrantes
-
-- Integrante 1: pendiente.
-- Integrante 2: pendiente.
-- Integrante 3: pendiente.
-- Integrante 4: pendiente.
-
-## Publicación
-
-Aplicativo publicado mediante GitHub Pages.
-
-Enlace: pendiente de incorporar.
-
-## Control de versiones
-
-El desarrollo se organiza mediante ramas de trabajo,
-commits y solicitudes de integración (Pull Requests).
-
-## Fotografías e intercambio de reportes
-
-- `reportes.js`: editor manual de fotografías (cobertura opaca de rostros y placas), reducción a máximo 800 píxeles por lado, compresión JPEG y transferencia JSON.
-- Solo se guarda la imagen editada y confirmada. No se guarda la fotografía original.
-- Exportación de todos los registros sin filtros; importación con validación de ubicación, categoría, actor, fecha y deduplicación por ID. La criticidad se recalcula.
-- Las fotografías importadas deben revisarse previamente por el equipo; no hay detección automática de datos personales.
-- El almacenamiento local tiene una cuota limitada. Exportar copias de seguridad regularmente.
+## IA y pendientes
+ChatGPT apoyó desarrollo y documentación. Pendiente: anexos originales de conversaciones, cronómetro RF-01, validación de recorridos y clasificación, revisión de fotos y posibles duplicados, commits individuales y video de contingencia. El nombre del repositorio actual no sigue literalmente la convención de nombre de equipo y reto; confirmar con el docente antes de renombrar (cambiaría el enlace).
