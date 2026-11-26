@@ -309,6 +309,7 @@ if (!Object.hasOwn(ACTORES, act)) {
     }
 
     dibujar();
+    activarRegistro(false);
     limpiarFoto();
     limpiarUbicacion();
 
@@ -325,6 +326,9 @@ if (!Object.hasOwn(ACTORES, act)) {
     $("f-categoria").selectedIndex = 0;
     $("f-actor").selectedIndex = 0;
 
+    $("panel").hidden = true;
+    $("ayuda-mapa").textContent = "Reporte guardado en " + rep.cuadra + ". Selecciona un punto para consultar su información.";
+    $("mapa").scrollIntoView({block: "center", behavior: "smooth"});
     msg(
         "Reporte guardado en " + rep.cuadra +
         ". Criticidad: " + c.puntaje +
@@ -388,7 +392,7 @@ window.listo.then(() => {
 
         activarRegistro(true);
         msg("Toca el mapa o usa tu ubicación.");
-        $("panel").scrollIntoView({block: "start", behavior: "smooth"});
+        $("mapa").scrollIntoView({block: "center", behavior: "smooth"});
 
     });
 
@@ -417,6 +421,7 @@ window.listo.then(() => {
 
         const solicitud = consulta;
 
+        if (!navigator.geolocation) return msg("GPS no disponible. Selecciona la ubicación en el mapa.");
         navigator.geolocation.getCurrentPosition(
 
             (p) => {

@@ -4,7 +4,7 @@ const canvasFoto = $('foto-canvas');
 const ctxFoto = canvasFoto.getContext('2d');
 function limpiarFoto() {
     fotoVersion++; fotoLista = ''; fotoCargando = false; inicioMarca = null;
-    $('foto-archivo').value = ''; $('foto-confirmar').checked = false;
+    $('foto-archivo').value = ''; if ($('foto-camara')) $('foto-camara').value = ''; $('foto-confirmar').checked = false;
     $('foto-editor').hidden = true; canvasFoto.width = 1; canvasFoto.height = 1;
     $('foto-msg').textContent = '';
 }
@@ -12,8 +12,8 @@ function fotoParaGuardar() {
     if (fotoCargando || (!$('foto-editor').hidden && (!$('foto-confirmar').checked || !fotoLista))) throw new Error('Confirma la anonimización de la foto o elimínala.');
     return fotoLista;
 }
-$('foto-archivo').addEventListener('change', async () => {
-    const archivo = $('foto-archivo').files[0]; limpiarFoto(); if (!archivo) return;
+async function cargarFoto(evento) {
+    const archivo = evento.target.files[0]; limpiarFoto(); if (!archivo) return;
     const version = fotoVersion; fotoCargando = true;
     try {
         if (!['image/jpeg','image/png','image/webp'].includes(archivo.type) || archivo.size > 20*1024*1024) throw new Error('Selecciona una imagen JPG, PNG o WebP de máximo 20 MB.');
@@ -30,7 +30,9 @@ $('foto-archivo').addEventListener('change', async () => {
         } finally { URL.revokeObjectURL(url); }
     } catch(e) { if(version===fotoVersion) $('foto-msg').textContent=e.message; }
     finally { if(version===fotoVersion) fotoCargando=false; }
-});
+}
+$('foto-archivo').addEventListener('change', cargarFoto);
+$('foto-camara').addEventListener('change', cargarFoto);
 function puntoFoto(e) { const r=canvasFoto.getBoundingClientRect(); return [Math.max(0,Math.min(canvasFoto.width,(e.clientX-r.left)*canvasFoto.width/r.width)),Math.max(0,Math.min(canvasFoto.height,(e.clientY-r.top)*canvasFoto.height/r.height))]; }
 canvasFoto.addEventListener('pointerdown',e=>{inicioMarca=puntoFoto(e);canvasFoto.setPointerCapture(e.pointerId);});
 canvasFoto.addEventListener('pointercancel',()=>{inicioMarca=null;});
@@ -47,10 +49,20 @@ $('foto-confirmar').addEventListener('change',()=>{
 });
 $('foto-quitar').addEventListener('click',limpiarFoto);
 function fotoSegura(s){return typeof s==='string' && s.length<=100000 && /^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/.test(s);}
-function fotoPopup(r){return fotoSegura(r.foto)?`<img class="foto-popup" src="${r.foto}" alt="Evidencia anonimizada">`:'';}
+function fotoPopup(r) {
+    const caja = document.createElement('section'); caja.className = 'evidencia-popup';
+    const titulo = document.createElement('strong'); titulo.textContent = 'Evidencia fotográfica'; caja.append(titulo);
+    const aviso = document.createElement('p'); aviso.className = 'foto-ausente';
+    if (!fotoSegura(r.foto)) { aviso.textContent = r.foto ? 'Fotografía no disponible.' : 'Este reporte no tiene fotografía.'; caja.append(aviso); return caja; }
+    const img = document.createElement('img'); img.className = 'foto-popup'; img.alt = 'Evidencia anonimizada del incidente';
+    img.addEventListener('error', () => { img.remove(); aviso.textContent = 'No se pudo visualizar la fotografía.'; caja.append(aviso); });
+    img.addEventListener('load', () => { if (estado.mapa && estado.mapa._popup) estado.mapa._popup.update(); });
+    img.src = r.foto; caja.append(img); return caja;
+}
 function validarImportado(r){
     if(!r || typeof r!=='object' || typeof r.id!=='string' || !/^[\w-]{1,100}$/.test(r.id) || !fechaValida(r.fecha_hora) || !Number.isFinite(r.lat) || !Number.isFinite(r.lng) || Math.abs(r.lat)>90 || Math.abs(r.lng)>180 || !Object.hasOwn(CATEGORIAS,r.categoria) || !Object.hasOwn(ACTORES,r.actor) || !['campo','ciudadano'].includes(r.origen)) return null;
-    const v=buscarEnViasJson([r.lat,r.lng],estado.vias); if(!v || v.id!==r.cuadra)return null;
+    if (!Object.hasOwn(estado.vias,r.cuadra)) return null;
+    const v=buscarEnViasJson([r.lat,r.lng],{[r.cuadra]:estado.vias[r.cuadra]},25.15); if(!v)return null;
     const extra=k=>typeof r[k]==='string'?r[k].trim().slice(0,60):'';
     const categoria_otro=extra('categoria_otro'),actor_otro=extra('actor_otro');
     if((r.categoria==='otro'&&!categoria_otro)||(r.actor==='otro'&&!actor_otro))return null;
