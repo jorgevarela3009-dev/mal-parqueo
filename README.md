@@ -45,4 +45,4 @@ Los rostros de peatones, conductores y del integrante que aparece tomando la fot
 - [Recorrido 2](documentos/evidencias-campo/recorrido-2.jpg)
 
 ## IA y pendientes
-ChatGPT apoyó desarrollo y documentación. Pendiente: anexos originales de conversaciones, cronómetro RF-01, clasificación, revisión de fotos y posibles duplicados, commits individuales y video de contingencia. Los recorridos no tienen trazas GPS (ver Evidencia de recorridos). El nombre del repositorio actual no sigue literalmente la convención de nombre de equipo y reto; confirmar con el docente antes de renombrar (cambiaría el enlace).
+ChatGPT apoyó desarrollo y documentación. Pendiente: anexos originales de conversaciones, cronómetro RF-01, revisión de fotos y posibles duplicados, commits individuales y video de contingencia. La clasificación vial quedó corregida en el commit e1b6555 (vía secundaria según OSM). Los recorridos no tienen trazas GPS (ver Evidencia de recorridos). El nombre del repositorio actual no sigue literalmente la convención de nombre de equipo y reto; confirmar con el docente antes de renombrar (cambiaría el enlace).
