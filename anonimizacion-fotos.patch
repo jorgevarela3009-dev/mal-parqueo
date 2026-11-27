@@ -1,0 +1,231 @@
+diff --git a/README.md b/README.md
+index 0e111f6..7a4e9c9 100644
+--- a/README.md
++++ b/README.md
+@@ -28,5 +28,8 @@ Criticidad = categoría + vía + franja. Pesos y rangos en criterios.json; pico
+ - datos/: configuración, vías, criterios y reportes.
+ - documentos/: evidencia, arquitectura y bitácora.
+ 
++## Anonimización de fotos (anonimizar.js)
++Toda foto, de cámara o galería, pasa por `anonimizar.js` antes de guardarse: detecta rostros (FaceDetector del navegador o MediaPipe con internet) y placas (regla de color: amarillo con caracteres oscuros) y los pixela. Después la persona arrastra sobre lo que falte (otras placas, documentos, tatuajes, letreros con nombres) o usa «Pixelar toda la foto». La foto no se guarda hasta confirmar. La detección de placas es una regla, no una IA: puede fallar con placas blancas o sucias, por eso la revisión humana sigue siendo obligatoria. `buscarPlacas()` es una función pura y se puede probar sola.
++
+ ## IA y pendientes
+ ChatGPT apoyó desarrollo y documentación. Pendiente: anexos originales de conversaciones, cronómetro RF-01, validación de recorridos y clasificación, revisión de fotos y posibles duplicados, commits individuales y video de contingencia. El nombre del repositorio actual no sigue literalmente la convención de nombre de equipo y reto; confirmar con el docente antes de renombrar (cambiaría el enlace).
+diff --git a/anonimizar.js b/anonimizar.js
+new file mode 100644
+index 0000000..2298684
+--- /dev/null
++++ b/anonimizar.js
+@@ -0,0 +1,144 @@
++// anonimizar.js — Anonimización de fotografías por pixelado.
++// Entrada: un canvas con la foto. Salida: el mismo canvas con rostros y placas pixelados.
++// Pasos: 1) detectar rostros, 2) detectar placas, 3) pixelar cada zona detectada.
++// Lo que no se detecta se cubre a mano o con el modo "pixelar toda la foto".
++(function (global) {
++    'use strict';
++
++    // ---------- 1. Pixelado ----------
++    // Reduce la zona a pocos bloques y la vuelve a estirar sin suavizar.
++    // Los bloques son grandes a propósito: los caracteres y las facciones no se pueden recuperar.
++    function pixelar(ctx, x, y, w, h, bloque) {
++        const cv = ctx.canvas;
++        x = Math.max(0, Math.floor(x)); y = Math.max(0, Math.floor(y));
++        w = Math.min(cv.width - x, Math.ceil(w)); h = Math.min(cv.height - y, Math.ceil(h));
++        if (w < 2 || h < 2) return;
++        const b = bloque || Math.max(10, Math.min(w, h) / 3);
++        const t = document.createElement('canvas');
++        t.width = Math.max(1, Math.ceil(w / b)); t.height = Math.max(1, Math.ceil(h / b));
++        t.getContext('2d').drawImage(cv, x, y, w, h, 0, 0, t.width, t.height);
++        ctx.save(); ctx.imageSmoothingEnabled = false;
++        ctx.drawImage(t, 0, 0, t.width, t.height, x, y, w, h);
++        ctx.restore();
++    }
++
++    // Modo seguro: toda la foto queda en bloques grandes.
++    function integral(cv, ctx) {
++        pixelar(ctx, 0, 0, cv.width, cv.height, Math.max(16, Math.round(Math.max(cv.width, cv.height) / 32)));
++    }
++
++    function ampliar(c, f) {
++        const mx = c.w * f, my = c.h * f;
++        return { x: c.x - mx, y: c.y - my, w: c.w + 2 * mx, h: c.h + 2 * my };
++    }
++
++    // ---------- 2. Placas (regla de color) ----------
++    // La placa colombiana es amarilla con caracteres negros. Se busca una mancha amarilla
++    // con forma de placa que tenga una parte oscura dentro. Es una regla, no una IA:
++    // puede fallar con placas blancas o muy sucias, y puede marcar de más (eso es seguro).
++    // Función pura: recibe los píxeles (RGBA) y devuelve cajas {x, y, w, h}. Se puede probar sola.
++    function buscarPlacas(datos, ancho, alto) {
++        const n = ancho * alto;
++        const amarillo = new Uint8Array(n), oscuro = new Uint8Array(n);
++        for (let i = 0, p = 0; i < n; i++, p += 4) {
++            const r = datos[p], g = datos[p + 1], b = datos[p + 2];
++            const max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min;
++            const v = max / 255, s = max ? d / max : 0;
++            if (v < .3) oscuro[i] = 1;
++            if (!d) continue;
++            let h = max === r ? 60 * (((g - b) / d) % 6) : max === g ? 60 * ((b - r) / d + 2) : 60 * ((r - g) / d + 4);
++            if (h < 0) h += 360;
++            if (h >= 40 && h <= 65 && s > .4 && v > .5) amarillo[i] = 1;
++        }
++        const visto = new Uint8Array(n), pila = new Int32Array(n), cajas = [];
++        for (let i0 = 0; i0 < n; i0++) {
++            if (!amarillo[i0] || visto[i0]) continue;
++            let sp = 0, area = 0, x0 = ancho, y0 = alto, x1 = 0, y1 = 0;
++            pila[sp++] = i0; visto[i0] = 1;
++            while (sp) {
++                const i = pila[--sp], x = i % ancho, y = (i / ancho) | 0;
++                area++;
++                if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
++                if (x > 0 && amarillo[i - 1] && !visto[i - 1]) { visto[i - 1] = 1; pila[sp++] = i - 1; }
++                if (x < ancho - 1 && amarillo[i + 1] && !visto[i + 1]) { visto[i + 1] = 1; pila[sp++] = i + 1; }
++                if (y > 0 && amarillo[i - ancho] && !visto[i - ancho]) { visto[i - ancho] = 1; pila[sp++] = i - ancho; }
++                if (y < alto - 1 && amarillo[i + ancho] && !visto[i + ancho]) { visto[i + ancho] = 1; pila[sp++] = i + ancho; }
++            }
++            const w = x1 - x0 + 1, h = y1 - y0 + 1, rel = w / h;
++            if (w < 14 || h < 6 || w > ancho * .45) continue;      // muy pequeña o demasiado grande (carrocería)
++            if (rel < .9 || rel > 4.5) continue;                    // forma de placa de carro o moto
++            if (area / (w * h) < .35) continue;                     // la mancha debe llenar la caja
++            let osc = 0;
++            for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) osc += oscuro[y * ancho + x];
++            const fo = osc / (w * h);
++            if (fo < .06 || fo > .55) continue;                     // debe haber caracteres oscuros dentro
++            cajas.push({ x: x0, y: y0, w, h });
++        }
++        return cajas;
++    }
++
++    function placas(cv) {
++        const k = Math.min(1, 640 / Math.max(cv.width, cv.height));
++        const w = Math.max(1, Math.round(cv.width * k)), h = Math.max(1, Math.round(cv.height * k));
++        const t = document.createElement('canvas'); t.width = w; t.height = h;
++        const g = t.getContext('2d', { willReadFrequently: true });
++        g.drawImage(cv, 0, 0, w, h);
++        return buscarPlacas(g.getImageData(0, 0, w, h).data, w, h)
++            .map(c => ampliar({ x: c.x / k, y: c.y / k, w: c.w / k, h: c.h / k }, .25));
++    }
++
++    // ---------- 3. Rostros ----------
++    // Primero la API nativa del navegador (FaceDetector). Si no existe, MediaPipe desde internet.
++    // Devuelve una lista de cajas, o null si ningún detector pudo funcionar.
++    const MP = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
++    const MODELO = 'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite';
++    let detectorMP = null;
++
++    const conTiempo = (promesa, ms) => Promise.race([promesa, new Promise((_, no) => setTimeout(() => no(new Error('tiempo')), ms))]);
++
++    async function rostrosNativo(cv) {
++        if (!('FaceDetector' in global)) return null;
++        try {
++            const det = new global.FaceDetector({ fastMode: false, maxDetectedFaces: 20 });
++            return (await det.detect(cv)).map(c => ampliar({ x: c.boundingBox.x, y: c.boundingBox.y, w: c.boundingBox.width, h: c.boundingBox.height }, .35));
++        } catch (e) { return null; }
++    }
++
++    async function rostrosMediaPipe(cv) {
++        try {
++            if (!detectorMP) {
++                const m = await conTiempo(import(MP + '/vision_bundle.mjs'), 12000);
++                const fs = await conTiempo(m.FilesetResolver.forVisionTasks(MP + '/wasm'), 12000);
++                detectorMP = await conTiempo(m.FaceDetector.createFromOptions(fs, {
++                    baseOptions: { modelAssetPath: MODELO }, runningMode: 'IMAGE', minDetectionConfidence: .35
++                }), 20000);
++            }
++            return detectorMP.detect(cv).detections.map(d => ampliar({
++                x: d.boundingBox.originX, y: d.boundingBox.originY, w: d.boundingBox.width, h: d.boundingBox.height
++            }, .35));
++        } catch (e) { return null; }
++    }
++
++    async function rostros(cv) {
++        const nativo = await rostrosNativo(cv);
++        return nativo !== null ? nativo : rostrosMediaPipe(cv);
++    }
++
++    // ---------- Todo junto ----------
++    // Detecta sobre la foto original y pixela después, para que una zona no afecte a la detección de otra.
++    async function auto(cv, ctx) {
++        const r = await rostros(cv), p = placas(cv);
++        (r || []).concat(p).forEach(c => pixelar(ctx, c.x, c.y, c.w, c.h));
++        return { rostros: r ? r.length : 0, rostrosDisponible: r !== null, placas: p.length };
++    }
++
++    function mensaje(res) {
++        const base = `Se pixelaron automáticamente ${res.rostros} rostro(s) y ${res.placas} placa(s).`;
++        const extra = res.rostrosDisponible ? '' : ' No se pudieron detectar rostros en este navegador: cúbrelos tú.';
++        return base + extra + ' Revisa la imagen y arrastra sobre lo que falte; si dudas, usa «Pixelar toda la foto».';
++    }
++
++    const API = { pixelar, integral, auto, mensaje, buscarPlacas };
++    global.Anonimizar = API;
++    if (typeof module !== 'undefined' && module.exports) module.exports = API;
++})(typeof window !== 'undefined' ? window : globalThis);
+diff --git a/index.html b/index.html
+index 1afa0a1..3256c15 100644
+--- a/index.html
++++ b/index.html
+@@ -342,8 +342,8 @@
+ 
+     <fieldset class="foto-caja"><legend>Fotografía opcional</legend>
+ <div class="foto-opciones"><label>Seleccionar de la galería<input id="foto-archivo" type="file" accept="image/jpeg,image/png,image/webp"></label><label>Tomar fotografía<input id="foto-camara" type="file" accept="image/jpeg,image/png,image/webp" capture="environment"></label></div>
+-<div id="foto-editor" hidden><p>Cubre completamente rostros y placas arrastrando sobre la imagen.</p><canvas id="foto-canvas" aria-label="Editor de fotografía"></canvas><label><input type="checkbox" id="foto-confirmar"> Confirmo que no se ven rostros ni placas.</label></div>
+-<button type="button" class="sec" id="foto-quitar">Eliminar fotografía</button><p id="foto-msg" aria-live="polite"></p></fieldset>
++<div id="foto-editor" hidden><p>Los rostros y las placas detectados se pixelan solos. Arrastra sobre cualquier otra información personal para pixelarla.</p><canvas id="foto-canvas" aria-label="Editor de fotografía"></canvas><label><input type="checkbox" id="foto-confirmar"> Confirmo que no se ven rostros ni placas.</label></div>
++<button type="button" class="sec" id="foto-integral">Pixelar toda la foto</button> <button type="button" class="sec" id="foto-quitar">Eliminar fotografía</button><p id="foto-msg" aria-live="polite"></p></fieldset>
+ <!-- Criticidad automática -->
+ 
+     <div id="info-criticidad" hidden>
+@@ -566,7 +566,8 @@
+     <script src="vias-mapa.js"></script>
+     <script src="filtros.js"></script>
+     <script src="resumen.js"></script>
+-    <script src="reportes.js?v=3"></script>
++    <script src="anonimizar.js?v=1"></script>
++    <script src="reportes.js?v=4"></script>
+ 
+ </body>
+ </html>
+diff --git a/reportes.js b/reportes.js
+index 8f02f6f..395c0c1 100644
+--- a/reportes.js
++++ b/reportes.js
+@@ -26,7 +26,14 @@ async function cargarFoto(evento) {
+             ctxFoto.fillStyle = '#fff'; ctxFoto.fillRect(0,0,canvasFoto.width,canvasFoto.height);
+             ctxFoto.drawImage(img,0,0,canvasFoto.width,canvasFoto.height);
+             $('foto-editor').hidden = false;
+-            $('foto-msg').textContent = 'Arrastra sobre cada rostro o placa para cubrirlo completamente.';
++            if (window.Anonimizar) {
++                $('foto-msg').textContent = 'Detectando rostros y placas…';
++                const res = await Anonimizar.auto(canvasFoto, ctxFoto);
++                if (version !== fotoVersion) return;
++                $('foto-msg').textContent = Anonimizar.mensaje(res);
++            } else {
++                $('foto-msg').textContent = 'Arrastra sobre cada rostro o placa para cubrirlo completamente.';
++            }
+         } finally { URL.revokeObjectURL(url); }
+     } catch(e) { if(version===fotoVersion) $('foto-msg').textContent=e.message; }
+     finally { if(version===fotoVersion) fotoCargando=false; }
+@@ -38,7 +45,9 @@ canvasFoto.addEventListener('pointerdown',e=>{inicioMarca=puntoFoto(e);canvasFot
+ canvasFoto.addEventListener('pointercancel',()=>{inicioMarca=null;});
+ canvasFoto.addEventListener('pointerup',e=>{
+     if(!inicioMarca)return; const [x,y]=inicioMarca,[a,b]=puntoFoto(e); inicioMarca=null;
+-    ctxFoto.fillStyle='#111'; ctxFoto.fillRect(Math.min(x,a)-3,Math.min(y,b)-3,Math.abs(a-x)+6,Math.abs(b-y)+6);
++    const bx=Math.min(x,a)-3, by=Math.min(y,b)-3, bw=Math.abs(a-x)+6, bh=Math.abs(b-y)+6;
++    if (window.Anonimizar) Anonimizar.pixelar(ctxFoto,bx,by,bw,bh);
++    else { ctxFoto.fillStyle='#111'; ctxFoto.fillRect(bx,by,bw,bh); }
+     fotoLista=''; $('foto-confirmar').checked=false;
+ });
+ $('foto-confirmar').addEventListener('change',()=>{
+@@ -48,6 +57,11 @@ $('foto-confirmar').addEventListener('change',()=>{
+     else $('foto-msg').textContent='Foto anonimizada y comprimida, lista para guardar.';
+ });
+ $('foto-quitar').addEventListener('click',limpiarFoto);
++$('foto-integral').addEventListener('click',()=>{
++    if($('foto-editor').hidden||!window.Anonimizar)return;
++    Anonimizar.integral(canvasFoto,ctxFoto); fotoLista=''; $('foto-confirmar').checked=false;
++    $('foto-msg').textContent='Toda la foto quedó pixelada. Confirma para guardarla.';
++});
+ function fotoSegura(s){return typeof s==='string' && s.length<=100000 && /^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/.test(s);}
+ function fotoPopup(r) {
+     const caja = document.createElement('section'); caja.className = 'evidencia-popup';
