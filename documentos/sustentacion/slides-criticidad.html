@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Criticidad de los reportes de mal parqueo</title>
+<style>
+  :root{
+    --bg:#0f172a; --panel:#1e293b; --ink:#f8fafc; --muted:#94a3b8;
+    --accent:#38bdf8; --alto:#ef4444; --medio:#f59e0b; --bajo:#22c55e;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:#000;overflow:hidden;
+    font-family:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:var(--ink)}
+  #stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;
+    transform-origin:center center;background:var(--bg)}
+  .slide{position:absolute;inset:0;padding:110px 140px 120px;display:none;flex-direction:column}
+  .slide.active{display:flex}
+  .body{flex:1;display:flex;flex-direction:column;justify-content:center;padding-bottom:40px}
+  h1{font-size:104px;line-height:1.08;font-weight:800;letter-spacing:-1px}
+  h2{font-size:72px;font-weight:800;margin-bottom:56px;letter-spacing:-.5px}
+  h2 .tag{color:var(--accent)}
+  .kicker{font-size:34px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:4px;margin-bottom:36px}
+  .sub{font-size:40px;color:var(--muted);margin-top:44px}
+  .footer{position:absolute;left:140px;right:140px;bottom:50px;display:flex;justify-content:space-between;
+    font-size:24px;color:var(--muted)}
+  /* Title */
+  .title{justify-content:center;background:radial-gradient(circle at 85% 20%,#1d4ed8 0,transparent 45%),var(--bg)}
+  .title .bar{width:180px;height:12px;background:var(--accent);border-radius:6px;margin-bottom:48px}
+  /* Formula */
+  .formula{display:flex;align-items:stretch;gap:28px}
+  .term{flex:1;background:var(--panel);border-radius:28px;padding:48px 48px;border-top:10px solid var(--accent)}
+  .term h3{font-size:52px;margin-bottom:28px}
+  .term p{font-size:44px;line-height:1.6;color:#cbd5e1}
+  .term b{color:var(--ink);font-size:52px}
+  .op{font-size:90px;font-weight:800;color:var(--accent);align-self:center}
+  .levels{display:flex;gap:28px;margin-top:64px}
+  .lvl{flex:1;border-radius:22px;padding:34px;text-align:center;font-size:44px;font-weight:700;color:#0f172a}
+  .lvl span{font-weight:500}
+  /* OSM */
+  .osm{display:flex;gap:28px;align-items:stretch}
+  .chip{background:var(--panel);border-radius:28px;padding:44px 44px;flex:1;display:flex;flex-direction:column;justify-content:center}
+  .chip .lbl{font-size:30px;color:var(--muted);margin-bottom:14px}
+  .chip .val{font-size:58px;font-weight:800}
+  .chip .eq{margin-top:16px}
+  .arrow{align-self:center;font-size:90px;color:var(--accent);font-weight:800}
+  .strike{color:var(--alto)} .ok{color:var(--bajo)}
+  .eq{font-size:36px;color:#cbd5e1;margin-top:56px;line-height:1.5}
+  .eq b{color:var(--ink)}
+  .note{margin-top:40px;font-size:36px;color:var(--muted)}
+  /* Before / after */
+  .ba{display:flex;flex-direction:column;gap:64px}
+  .row{display:flex;align-items:center;gap:36px}
+  .row .name{width:260px;font-size:48px;font-weight:700}
+  .stack{flex:1;height:150px;display:flex;border-radius:18px;overflow:hidden;background:#334155}
+  .seg{display:flex;align-items:center;justify-content:center;font-size:48px;font-weight:800;color:#0f172a}
+  .pts{width:320px;text-align:right;font-size:80px;font-weight:800}
+  .pts small{font-size:30px;color:var(--muted);font-weight:500}
+  .legend{display:flex;gap:44px;font-size:32px;color:#cbd5e1;margin-top:10px}
+  .legend i{display:inline-block;width:30px;height:30px;border-radius:8px;margin-right:12px;vertical-align:-4px}
+  .delta{margin-top:30px;font-size:40px;color:var(--muted)}
+  .delta b{color:var(--accent)}
+  /* Ranking */
+  .rank{display:flex;flex-direction:column;gap:16px}
+  .r{display:flex;align-items:center;gap:28px}
+  .r .id{width:170px;font-size:38px;font-weight:700}
+  .r .track{flex:1;height:66px}
+  .r .fill{height:100%;border-radius:12px;background:var(--accent);display:flex;align-items:center;
+    justify-content:flex-end;padding-right:18px;font-size:34px;font-weight:800;color:#0f172a;min-width:80px}
+  .r:first-child .fill{background:var(--alto);color:#fff}
+  /* nav */
+  #prog{position:absolute;left:0;bottom:0;height:8px;background:var(--accent);transition:width .3s}
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <section class="slide title">
+    <div class="bar"></div>
+    <div class="kicker">Reto 2 · mal-parqueo</div>
+    <h1>Criticidad de los reportes<br>de mal parqueo</h1>
+    <div class="sub">Ingeniería de Sistemas · Universidad del Magdalena · Santa Marta</div>
+  </section>
+
+  <section class="slide">
+    <h2>¿Cómo se calcula el <span class="tag">puntaje</span>?</h2>
+    <div class="body">
+    <div class="formula">
+      <div class="term"><h3>Categoría</h3><p>Doble fila <b>3</b><br>Andén <b>2</b></p></div>
+      <div class="op">+</div>
+      <div class="term"><h3>Tipo de vía</h3><p>Arterial <b>3</b><br>Secundaria <b>1</b></p></div>
+      <div class="op">+</div>
+      <div class="term"><h3>Franja</h3><p>Pico <b>3</b><br>Valle <b>1</b></p></div>
+    </div>
+    <div class="levels">
+      <div class="lvl" style="background:var(--bajo)">Bajo <span>0–4</span></div>
+      <div class="lvl" style="background:var(--medio)">Medio <span>5–6</span></div>
+      <div class="lvl" style="background:var(--alto);color:#fff">Alto <span>7–9</span></div>
+    </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2>Corrección con <span class="tag">OpenStreetMap</span></h2>
+    <div class="body">
+    <div class="osm">
+      <div class="chip">
+        <div class="lbl">9 tramos · UNI-01…09</div>
+        <div class="val strike">Arterial</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="chip">
+        <div class="lbl">OSM · vía 314669784</div>
+        <div class="val">Calle 29H3</div>
+        <div class="eq">highway=<b>residential</b></div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="chip">
+        <div class="lbl">Reclasificados como</div>
+        <div class="val ok">Secundaria</div>
+      </div>
+    </div>
+    <div class="eq">primary / trunk = <b>arterial</b> · secondary / tertiary / residential = <b>secundaria</b></div>
+    <div class="note">Pesos y rangos no se cambiaron.</div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2>Antes <span class="tag">vs</span> después</h2>
+    <div class="body">
+    <div class="ba">
+      <div class="row">
+        <div class="name">Antes</div>
+        <div class="stack"><div class="seg" style="width:100%;background:var(--alto);color:#fff">30 Alto</div></div>
+        <div class="pts">243 <small>pts</small></div>
+      </div>
+      <div class="row">
+        <div class="name">Después</div>
+        <div class="stack">
+          <div class="seg" style="width:26.67%;background:var(--alto);color:#fff">8 Alto</div>
+          <div class="seg" style="width:73.33%;background:var(--medio)">22 Medio</div>
+        </div>
+        <div class="pts">183 <small>pts</small></div>
+      </div>
+    </div>
+    <div class="legend" style="margin-top:56px">
+      <span><i style="background:var(--alto)"></i>Alto</span>
+      <span><i style="background:var(--medio)"></i>Medio</span>
+      <span><i style="background:var(--bajo)"></i>Bajo (0 en ambos casos)</span>
+    </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2>Ranking de tramos por <span class="tag">puntaje</span></h2>
+    <div class="rank" id="rank"></div>
+  </section>
+
+  <div id="prog"></div>
+</div>
+
+<script>
+(function(){
+  var data=[["UNI-04",50],["UNI-03",33],["UNI-05",25],["UNI-07",23],["UNI-02",22],
+            ["UNI-09",12],["UNI-06",7],["UNI-08",6],["UNI-01",5]];
+  var max=50, rank=document.getElementById('rank');
+  data.forEach(function(d){
+    var r=document.createElement('div'); r.className='r';
+    r.innerHTML='<div class="id">'+d[0]+'</div><div class="track"><div class="fill" style="width:'+
+      (d[1]/max*100)+'%">'+d[1]+'</div></div>';
+    rank.appendChild(r);
+  });
+
+  var slides=[].slice.call(document.querySelectorAll('.slide')), i=0;
+  var stage=document.getElementById('stage'), prog=document.getElementById('prog');
+  function fit(){
+    var s=Math.min(window.innerWidth/1920, window.innerHeight/1080);
+    stage.style.transform='translate(-50%,-50%) scale('+s+')';
+  }
+  function show(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach(function(s,k){s.classList.toggle('active',k===i)});
+    prog.style.width=((i+1)/slides.length*100)+'%';
+    if(location.hash!=='#'+(i+1)) history.replaceState(null,'','#'+(i+1));
+  }
+  document.addEventListener('keydown',function(e){
+    if(['ArrowRight','ArrowDown','PageDown',' ','Enter'].indexOf(e.key)>=0){e.preventDefault();show(i+1)}
+    else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].indexOf(e.key)>=0){e.preventDefault();show(i-1)}
+    else if(e.key==='Home')show(0);
+    else if(e.key==='End')show(slides.length-1);
+    else if(e.key==='f'||e.key==='F'){if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()}
+  });
+  document.addEventListener('click',function(e){ show(e.clientX < window.innerWidth/3 ? i-1 : i+1) });
+  window.addEventListener('resize',fit);
+  fit();
+  show((parseInt(location.hash.slice(1),10)||1)-1);
+})();
+</script>
+</body>
+</html>
