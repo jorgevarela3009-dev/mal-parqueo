@@ -31,7 +31,8 @@
         return { x: c.x - mx, y: c.y - my, w: c.w + 2 * mx, h: c.h + 2 * my, tipo: c.tipo };
     }
 
-    // Placa colombiana: mancha amarilla con forma alargada y caracteres oscuros dentro.
+    // Placa colombiana: mancha amarilla ~2:1, con trazos oscuros de caracteres
+    // (contraste y bordes). Rechaza letreros, toldos y follaje uniforme.
     function buscarPlacas(datos, ancho, alto) {
         const n = ancho * alto;
         const amarillo = new Uint8Array(n), oscuro = new Uint8Array(n);
@@ -43,7 +44,7 @@
             if (!d) continue;
             let h = max === r ? 60 * (((g - b) / d) % 6) : max === g ? 60 * ((b - r) / d + 2) : 60 * ((r - g) / d + 4);
             if (h < 0) h += 360;
-            if (h >= 40 && h <= 65 && s > 0.4 && v > 0.5) amarillo[i] = 1;
+            if (h >= 42 && h <= 55 && s > 0.45 && v > 0.55) amarillo[i] = 1;
         }
         const visto = new Uint8Array(n), pila = new Int32Array(n), cajas = [];
         for (let i0 = 0; i0 < n; i0++) {
@@ -59,14 +60,33 @@
                 if (y > 0 && amarillo[i - ancho] && !visto[i - ancho]) { visto[i - ancho] = 1; pila[sp++] = i - ancho; }
                 if (y < alto - 1 && amarillo[i + ancho] && !visto[i + ancho]) { visto[i + ancho] = 1; pila[sp++] = i + ancho; }
             }
-            const w = x1 - x0 + 1, h = y1 - y0 + 1, rel = w / h;
-            if (w < 14 || h < 6 || w > ancho * 0.45) continue;
-            if (rel < 0.9 || rel > 4.5) continue;
-            if (area / (w * h) < 0.35) continue;
-            let osc = 0;
-            for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) osc += oscuro[y * ancho + x];
-            const fo = osc / (w * h);
-            if (fo < 0.06 || fo > 0.55) continue;
+            const w = x1 - x0 + 1, h = y1 - y0 + 1, rel = w / h, nn = w * h;
+            if (w < Math.max(14, ancho * 0.035) || h < 6 || w > ancho * 0.28) continue;
+            // Motos ~1.7, automóviles ~2–2.4. Fuera de eso suele ser un letrero o una mancha.
+            if (rel < 1.65 || rel > 2.7) continue;
+            if (area / nn < 0.45) continue;
+            // Prefiere la mitad inferior del encuadre (las placas no están en los árboles).
+            if ((y0 + y1) / 2 < alto * 0.38 && w < ancho * 0.08) continue;
+            let osc = 0, transH = 0, bordes = 0, lumSum = 0, lum2 = 0;
+            for (let y = y0; y <= y1; y++) {
+                for (let x = x0; x <= x1; x++) {
+                    const i = y * ancho + x, p = i * 4;
+                    const lum = (2 * datos[p] + 7 * datos[p + 1] + datos[p + 2]) / 10;
+                    lumSum += lum; lum2 += lum * lum;
+                    const d = oscuro[i];
+                    osc += d;
+                    if (x < x1 && d !== oscuro[i + 1]) transH++;
+                    if (d && ((x > x0 && !oscuro[i - 1]) || (x < x1 && !oscuro[i + 1]) ||
+                            (y > y0 && !oscuro[i - ancho]) || (y < y1 && !oscuro[i + ancho]))) bordes++;
+                }
+            }
+            const fo = osc / nn;
+            if (fo < 0.08 || fo > 0.45) continue;
+            const media = lumSum / nn;
+            const std = Math.sqrt(Math.max(0, lum2 / nn - media * media));
+            if (std < 45) continue;
+            const edgeFrac = osc ? bordes / osc : 0;
+            if (transH / h < 1.4 || edgeFrac < 0.25 || edgeFrac > 0.85) continue;
             cajas.push({ x: x0, y: y0, w, h, tipo: 'placa' });
         }
         return cajas;
