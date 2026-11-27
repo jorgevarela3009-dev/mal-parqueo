@@ -2,7 +2,11 @@
 // Solo geometría, sin librerías. mapa.js se encarga de pintarlos.
 // Matemática según Red Blob Games: https://www.redblobgames.com/grids/hexagons/
 
-const METROS_POR_GRADO = 111320;
+// Misma proyección que Leaflet / OSM (EPSG:3857, Web Mercator).
+// Así las celdas se calculan en un espacio independiente del zoom y
+// coinciden con los puntos y las vías a cualquier nivel (no en una
+// aproximación plana lat/lng, que se desalinea al alejar el mapa).
+const RADIO_MERCATOR = 6378137;
 
 // Origen fijo de la colmena (el centro de la zona en config.json),
 // para que los hexágonos no se muevan al agregar o quitar reportes.
@@ -10,14 +14,27 @@ function origenDeCentro(centro) {
   return { lat: centro[0], lng: centro[1] };
 }
 
+function aMercator(lat, lng) {
+  const x = RADIO_MERCATOR * (lng * Math.PI / 180);
+  const y = RADIO_MERCATOR * Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360));
+  return { x, y };
+}
+
+function deMercator(x, y) {
+  const lng = (x / RADIO_MERCATOR) * 180 / Math.PI;
+  const lat = (2 * Math.atan(Math.exp(y / RADIO_MERCATOR)) - Math.PI / 2) * 180 / Math.PI;
+  return [lat, lng];
+}
+
 function aMetros(lat, lng, origen) {
-  const mLng = METROS_POR_GRADO * Math.cos((origen.lat * Math.PI) / 180);
-  return { x: (lng - origen.lng) * mLng, y: (lat - origen.lat) * METROS_POR_GRADO };
+  const p = aMercator(lat, lng);
+  const o = aMercator(origen.lat, origen.lng);
+  return { x: p.x - o.x, y: p.y - o.y };
 }
 
 function aLatLng(x, y, origen) {
-  const mLng = METROS_POR_GRADO * Math.cos((origen.lat * Math.PI) / 180);
-  return [origen.lat + y / METROS_POR_GRADO, origen.lng + x / mLng];
+  const o = aMercator(origen.lat, origen.lng);
+  return deMercator(o.x + x, o.y + y);
 }
 
 // Ancho (lado plano a lado plano) = radio * sqrt(3) en hexágonos con punta arriba.
