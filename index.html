@@ -344,7 +344,7 @@
 
     <fieldset class="foto-caja"><legend>Fotografía opcional</legend>
 <div class="foto-opciones"><label>Seleccionar de la galería<input id="foto-archivo" type="file" accept="image/jpeg,image/png,image/webp"></label><label>Tomar fotografía<input id="foto-camara" type="file" accept="image/jpeg,image/png,image/webp" capture="environment"></label></div>
-<div id="foto-editor" hidden><p>Cubre completamente rostros y placas arrastrando sobre la imagen.</p><canvas id="foto-canvas" aria-label="Editor de fotografía"></canvas><label><input type="checkbox" id="foto-confirmar"> Confirmo que no se ven rostros ni placas.</label></div>
+<div id="foto-editor" hidden><p>La foto se pixela sola al subirla. Si queda algún rostro o placa, arrastra para cubrirlo.</p><canvas id="foto-canvas" aria-label="Editor de fotografía"></canvas><label><input type="checkbox" id="foto-confirmar" disabled> Pixelado automático aplicado.</label></div>
 <button type="button" class="sec" id="foto-quitar">Eliminar fotografía</button><p id="foto-msg" aria-live="polite"></p></fieldset>
 <!-- Criticidad automática -->
 
@@ -577,7 +577,7 @@
     <script src="vias-mapa.js"></script>
     <script src="filtros.js"></script>
     <script src="resumen.js?v=4"></script>
-    <script src="reportes.js?v=3"></script>
+    <script src="reportes.js?v=5"></script>
 
 </body>
 </html>
