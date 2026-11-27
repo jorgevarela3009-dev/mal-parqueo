@@ -1,0 +1,39 @@
+flowchart TB
+  subgraph Cliente["Cliente: navegador (SPA estática)"]
+    subgraph Presentacion["Capa de presentación"]
+      UI1[Vista Registro]
+      UI2[Vista Tablero / Mapa]
+      UI3[Vista Resumen operativo]
+    end
+    subgraph Aplicacion["Capa de aplicación"]
+      S1[Servicio de reportes]
+      S2[Servicio de filtros]
+      S3[Servicio de exportación / importación]
+    end
+    subgraph Dominio["Capa de dominio"]
+      D1[Modelo Reporte]
+      D2[Motor de criticidad]
+      D3[Clasificador de franja pico / valle]
+      D4[Detector de cuadra]
+    end
+    subgraph Visualizacion["Componentes de mapa"]
+      V1[Leaflet]
+      V2[Leaflet.heat]
+      V3[Hexbin propio]
+    end
+    subgraph Datos["Capa de persistencia"]
+      R1[Repositorio de reportes]
+      LS[(localStorage)]
+      CAT[(vias.json: catálogo de cuadras)]
+    end
+  end
+  APIS[[Geolocation API · File API]]
+  GH[GitHub Pages: hosting estático]
+
+  Presentacion --> Aplicacion --> Dominio
+  Presentacion --> Visualizacion
+  Aplicacion --> R1 --> LS
+  D4 --> CAT
+  S1 --> APIS
+  S3 --> APIS
+  GH -. "HTTPS: HTML, CSS, JS" .-> Cliente

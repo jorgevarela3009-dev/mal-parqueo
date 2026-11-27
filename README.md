@@ -27,6 +27,12 @@ Criticidad = categoría + vía + franja. Pesos y rangos en criterios.json; pico 
 - mapa.js / vias-mapa.js / hexagonos.js / coordenadas.js: visualización y apoyo geográfico.
 - datos/: configuración, vías, criterios y reportes.
 - documentos/: evidencia, arquitectura y bitácora.
+- documentos/arquitectura.png y documentos/arquitectura.mmd: diagrama de arquitectura en capas (cliente SPA sin backend).
+
+## Arquitectura
+La app es una SPA estática, sin servidor ni base de datos en línea: presentación, aplicación, dominio, mapa y persistencia local corren en el navegador, y se publica en GitHub Pages.
+
+![Diagrama de arquitectura en capas](documentos/arquitectura.png)
 
 ## IA y pendientes
 ChatGPT apoyó desarrollo y documentación. Pendiente: anexos originales de conversaciones, cronómetro RF-01, validación de recorridos y clasificación, revisión de fotos y posibles duplicados, commits individuales y video de contingencia. El nombre del repositorio actual no sigue literalmente la convención de nombre de equipo y reto; confirmar con el docente antes de renombrar (cambiaría el enlace).
