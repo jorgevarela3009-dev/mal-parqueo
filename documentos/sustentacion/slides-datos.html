@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arquitectura de datos y mapa hexagonal · MoviTech SM · Reto 2</title>
+<style>
+:root{
+  --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --bg:#f8fafc;
+  --teal:#0f766e; --teal2:#14b8a6; --tealbg:#ccfbf1;
+  --alto:#dc2626; --medio:#f59e0b; --bajo:#16a34a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#0b1220;overflow:hidden}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;color:var(--ink)}
+#stage{position:absolute;left:50%;top:50%;width:1280px;height:720px;transform-origin:center center}
+.slide{position:absolute;inset:0;background:#fff;padding:64px 80px 56px;display:none;overflow:hidden}
+.slide.active{display:flex;flex-direction:column}
+.slide::after{content:attr(data-n);position:absolute;right:40px;bottom:24px;font-size:15px;color:var(--muted);letter-spacing:.05em}
+.foot{position:absolute;left:80px;bottom:24px;font-size:15px;color:var(--muted)}
+.kicker{font-size:18px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin-bottom:14px}
+h1{font-size:64px;line-height:1.05;font-weight:800;letter-spacing:-.02em}
+h2{font-size:44px;line-height:1.1;font-weight:800;letter-spacing:-.015em;margin-bottom:34px}
+code,.mono{font-family:ui-monospace,"Cascadia Code",Consolas,"DejaVu Sans Mono",monospace;font-size:.9em;background:#f1f5f9;padding:1px 6px;border-radius:6px}
+
+/* 1 título */
+.title{background:linear-gradient(135deg,#0f766e 0%,#115e59 55%,#0b3b3a 100%);color:#fff;justify-content:center}
+.title .kicker{color:#99f6e4}
+.title h1{max-width:820px}
+.title .sub{margin-top:28px;font-size:26px;color:#ccfbf1}
+.title .meta{margin-top:54px;font-size:19px;color:#a7f3d0;line-height:1.6}
+.title::after{color:#99f6e4}
+.title svg.deco{position:absolute;right:-40px;top:70px;opacity:.22}
+
+/* 2 dónde viven */
+.cols{display:flex;gap:28px;align-items:stretch;flex:1}
+.panel{border:2px solid var(--line);border-radius:20px;padding:26px 28px;background:var(--bg)}
+.files{display:grid;grid-template-columns:1fr 1fr;gap:16px;flex:2}
+.file{background:#fff;border:2px solid var(--line);border-radius:16px;padding:20px 22px}
+.file b{display:block;font-family:ui-monospace,Consolas,"DejaVu Sans Mono",monospace;font-size:22px;color:var(--teal);margin-bottom:8px}
+.file span{font-size:19px;color:#334155;line-height:1.35}
+.ls{flex:1;background:#fff7ed;border-color:#fed7aa;display:flex;flex-direction:column;justify-content:center}
+.ls b{font-family:ui-monospace,Consolas,"DejaVu Sans Mono",monospace;font-size:22px;color:#c2410c;display:block;margin:8px 0 10px}
+.ls span{font-size:19px;color:#334155;line-height:1.4}
+.tag{display:inline-block;font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.bottomline{margin-top:24px;font-size:22px;color:#334155}
+.bottomline strong{color:var(--teal)}
+
+/* 3 diagrama */
+.diagram{padding:14px 14px 14px 56px;flex-direction:row!important;gap:28px;align-items:center}
+.diagram .side{width:340px;flex:none}
+.diagram h2{font-size:40px;margin-bottom:26px}
+.diagram .imgwrap{flex:1;height:100%;display:flex;justify-content:center;align-items:center;min-height:0}
+.diagram img{max-height:100%;max-width:100%;cursor:zoom-in}
+.caption{font-size:22px;line-height:1.45;color:#334155}
+.caption p{margin-bottom:16px}
+.caption b{color:var(--teal)}
+.caption .zh{font-size:15px;color:var(--muted)}
+#zoom{position:fixed;inset:0;background:rgba(255,255,255,.98);display:none;overflow:auto;cursor:zoom-out;z-index:10}
+#zoom img{display:block;margin:0 auto;width:min(1568px,100vw)}
+#zoom.on{display:block}
+
+/* 4 fotos y duplicados */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start}
+.card{border-radius:22px;padding:30px 34px;background:var(--bg);border:2px solid var(--line)}
+.card h3{font-size:28px;margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.card ul{list-style:none}
+.card li{font-size:24px;line-height:1.35;padding:10px 0 10px 34px;position:relative;color:#1e293b}
+.card li::before{content:"";position:absolute;left:4px;top:19px;width:14px;height:14px;border-radius:4px;background:var(--teal2)}
+.card.dup li::before{background:#f97316}
+.ico{width:40px;height:40px;border-radius:12px;display:inline-grid;place-items:center;color:#fff;font-size:22px;background:var(--teal)}
+.dup .ico{background:#ea580c}
+
+/* 5 hexágonos */
+.hexgrid{display:grid;grid-template-columns:430px 1fr;gap:48px;align-items:center;margin-top:30px}
+.figs{display:flex;flex-direction:column;gap:14px;align-items:center}
+.figs .lbl{font-size:17px;color:var(--muted);text-align:center}
+.points{list-style:none}
+.points li{font-size:25px;line-height:1.3;padding:11px 0 11px 40px;position:relative}
+.points li::before{content:"";position:absolute;left:0;top:15px;width:22px;height:24px;background:var(--teal2);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+.points small{color:var(--muted);font-size:18px}
+
+/* 6 criticidad */
+.nums{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-bottom:30px}
+.num{border-radius:22px;padding:22px 26px;color:#fff}
+.num .v{font-size:86px;font-weight:800;line-height:1}
+.num .k{font-size:22px;font-weight:600;margin-top:8px;opacity:.95}
+.num .r{font-size:16px;opacity:.85;margin-top:2px}
+.n-alto{background:var(--alto)} .n-medio{background:var(--medio)} .n-bajo{background:var(--bajo)}
+.n-tot{background:var(--ink)}
+.bar{display:flex;height:16px;border-radius:8px;overflow:hidden;margin:-12px 0 28px}
+.bar i{display:block}
+.lims{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.lim{border-left:6px solid var(--teal);background:var(--bg);border-radius:0 16px 16px 0;padding:16px 22px;font-size:20px;line-height:1.35;color:#1e293b}
+.lim b{display:block;font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:6px}
+
+#hint{position:fixed;left:12px;bottom:8px;color:#64748b;font:12px system-ui,sans-serif;z-index:5}
+@media print{#hint{display:none}}
+</style>
+</head>
+<body>
+<div id="stage">
+
+<!-- 1 -->
+<section class="slide title" data-n="1 / 6">
+  <svg class="deco" width="520" height="560" viewBox="0 0 520 560" aria-hidden="true" id="decohex"></svg>
+  <div class="kicker">Reto 2 · Equipo MoviTech SM</div>
+  <h1>Arquitectura de datos y mapa hexagonal</h1>
+  <div class="sub">App web de control de mal parqueo · Santa Marta</div>
+  <div class="meta">Ingeniería de Sistemas · Universidad del Magdalena<br>Docente: Aquiles Cohen</div>
+</section>
+
+<!-- 2 -->
+<section class="slide" data-n="2 / 6">
+  <div class="kicker">Sin servidor · sin base de datos en línea</div>
+  <h2>¿Dónde viven los datos?</h2>
+  <div class="cols">
+    <div class="panel files" style="padding:22px">
+      <div class="file"><b>config.json</b><span>Ciudad, zona activa, centro y zoom del mapa</span></div>
+      <div class="file"><b>vias.json</b><span>9 segmentos de vía: UNI-01 … UNI-09 (Calle 29H)</span></div>
+      <div class="file"><b>criterios.json</b><span>Pesos y rangos de la criticidad</span></div>
+      <div class="file"><b>reportes.json</b><span>Base precargada: 30 reportes con foto</span></div>
+    </div>
+    <div class="panel ls">
+      <span class="tag">Navegador de cada usuario</span>
+      <b>localStorage<br>reportes_locales</b>
+      <span>Reportes creados en ese navegador + los importados</span>
+    </div>
+  </div>
+  <div class="bottomline">Al abrir: se cargan los JSON, se <strong>juntan las dos fuentes</strong>, se quitan repetidos por ID y se pinta el mapa.</div>
+</section>
+
+<!-- 3 -->
+<section class="slide diagram" data-n="3 / 6">
+  <div class="side">
+    <div class="kicker">Modelo de datos</div>
+    <h2>Diagrama entidad-relación</h2>
+    <div class="caption">
+      <p>Cada <b>reporte</b> → un <b>segmento de vía</b> (a ≤ 25 m)</p>
+      <p><b>puntaje</b> = categoría + vía + franja <span style="white-space:nowrap">(<code>criterios.json</code>)</span></p>
+      <p class="zh">Clic en el diagrama (o Z) para ampliar</p>
+    </div>
+  </div>
+  <div class="imgwrap"><img src="arquitectura-datos.png" alt="Diagrama entidad-relación de los datos: CONFIG_JSON, ZONA, VIA_SEGMENTO, CRITERIOS_JSON, REPORTES_JSON, LOCALSTORAGE y REPORTE" title="Clic para ampliar"></div>
+</section>
+
+<!-- 4 -->
+<section class="slide" data-n="4 / 6">
+  <div class="kicker">Privacidad e intercambio</div>
+  <h2>Fotos y duplicados</h2>
+  <div class="two">
+    <div class="card">
+      <h3><span class="ico">▣</span>Foto dentro del reporte</h3>
+      <ul>
+        <li>Texto Base64 en el campo <code>foto</code></li>
+        <li>Máximo 800 px por el lado más largo</li>
+        <li>Placas y rostros pixelados</li>
+        <li>El original no se guarda</li>
+      </ul>
+    </div>
+    <div class="card dup">
+      <h3><span class="ico">⇄</span>Intercambio JSON</h3>
+      <ul>
+        <li>Exportar / importar un archivo JSON entre celulares</li>
+        <li>Deduplicación por <b>id exacto</b></li>
+        <li>Gana el primero que aparece</li>
+        <li>Un duplicado no sobrescribe</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="slide" data-n="5 / 6">
+  <div class="kicker">Mapa de criticidad</div>
+  <h2>¿Por qué hexágonos de 50 m?</h2>
+  <div class="hexgrid">
+    <div class="figs">
+      <svg id="cmp" width="430" height="230" viewBox="0 0 430 230" role="img" aria-label="Hexágono: 6 vecinos a la misma distancia. Cuadrado: vecinos a 1 y a 1,41"></svg>
+      <div class="lbl">Hexágono: 6 vecinos a la misma distancia · Cuadrado: 1 vs 1,41</div>
+    </div>
+    <ul class="points">
+      <li>Casillas iguales → zonas comparables</li>
+      <li>Un número por zona <small>(el mapa de calor no da número)</small></li>
+      <li>50 m ≈ un tramo de calle</li>
+      <li>Malla propia con fórmulas de Red Blob Games <small>(H3 de Uber: solo referencia)</small></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="slide" data-n="6 / 6">
+  <div class="kicker">30 reportes · 9 tramos de la Calle 29H</div>
+  <h2>Criticidad actual</h2>
+  <div class="nums">
+    <div class="num n-alto"><div class="v">8</div><div class="k">Alto</div><div class="r">7–9 puntos</div></div>
+    <div class="num n-medio"><div class="v">22</div><div class="k">Medio</div><div class="r">5–6 puntos</div></div>
+    <div class="num n-bajo"><div class="v">0</div><div class="k">Bajo</div><div class="r">0–4 puntos</div></div>
+    <div class="num n-tot"><div class="v">183</div><div class="k">puntos en total</div><div class="r">suma de los 30 reportes</div></div>
+  </div>
+  <div class="bar"><i style="width:26.67%;background:var(--alto)"></i><i style="width:73.33%;background:var(--medio)"></i></div>
+  <div class="lims">
+    <div class="lim"><b>Limitación</b>Pocos datos: una celda con 1 o 2 reportes no es estadísticamente significativa.</div>
+    <div class="lim"><b>Limitación</b>Sin backend: cada navegador tiene su lista; se comparte pasando archivos JSON a mano.</div>
+  </div>
+</section>
+
+</div>
+<div id="zoom" title="Clic o Esc para cerrar"><img src="arquitectura-datos.png" alt="Diagrama entidad-relación ampliado"></div>
+<div id="hint">← → navegar · F pantalla completa · clic en el diagrama para ampliar</div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var i=0, stage=document.getElementById('stage'), zoom=document.getElementById('zoom');
+  function fromHash(){var n=parseInt(location.hash.slice(1),10);return (n>=1&&n<=slides.length)?n-1:0;}
+  function show(n){i=Math.max(0,Math.min(slides.length-1,n));slides.forEach(function(s,k){s.classList.toggle('active',k===i);});
+    if(location.hash!=='#'+(i+1)) history.replaceState(null,'','#'+(i+1));}
+  function fit(){var s=Math.min(innerWidth/1280,innerHeight/720);stage.style.transform='translate(-50%,-50%) scale('+s+')';}
+  addEventListener('resize',fit); fit(); show(fromHash());
+  addEventListener('hashchange',function(){show(fromHash());});
+  addEventListener('keydown',function(e){
+    if(zoom.classList.contains('on')){ if(e.key==='Escape'||e.key==='Enter'||e.key===' ') zoom.classList.remove('on'); return; }
+    if(['ArrowRight','ArrowDown','PageDown',' ','Enter'].indexOf(e.key)>=0){e.preventDefault();show(i+1);}
+    else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].indexOf(e.key)>=0){e.preventDefault();show(i-1);}
+    else if(e.key==='Home') show(0); else if(e.key==='End') show(slides.length-1);
+    else if(e.key==='f'||e.key==='F'){ if(!document.fullscreenElement) document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
+    else if((e.key==='z'||e.key==='Z')&&i===2) zoom.classList.add('on');
+  });
+  document.querySelector('.diagram img').addEventListener('click',function(){zoom.classList.add('on');});
+  zoom.addEventListener('click',function(){zoom.classList.remove('on');});
+
+  // SVG helpers
+  var NS='http://www.w3.org/2000/svg';
+  function el(svg,tag,attrs,text){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;svg.appendChild(e);return e;}
+  function hexPts(cx,cy,R){var p=[];for(var k=0;k<6;k++){var a=Math.PI/180*(60*k-30);p.push((cx+R*Math.cos(a)).toFixed(1)+','+(cy+R*Math.sin(a)).toFixed(1));}return p.join(' ');}
+
+  // Comparison figure
+  var c=document.getElementById('cmp'), R=34, d=Math.sqrt(3)*R, cx=110, cy=115;
+  for(var k=0;k<6;k++){var a=Math.PI/3*k;el(c,'polygon',{points:hexPts(cx+d*Math.cos(a),cy+d*Math.sin(a),R),fill:'#ccfbf1',stroke:'#0f766e','stroke-width':2});}
+  el(c,'polygon',{points:hexPts(cx,cy,R),fill:'#14b8a6',stroke:'#0f766e','stroke-width':2});
+  for(k=0;k<6;k++){a=Math.PI/3*k;el(c,'line',{x1:cx,y1:cy,x2:cx+d*Math.cos(a),y2:cy+d*Math.sin(a),stroke:'#0f172a','stroke-width':2});el(c,'circle',{cx:cx+d*Math.cos(a),cy:cy+d*Math.sin(a),r:4,fill:'#0f172a'});}
+  el(c,'circle',{cx:cx,cy:cy,r:5,fill:'#0f172a'});
+  // squares
+  var S=56, sx=320, sy=115;
+  for(var gx=-1;gx<=1;gx++)for(var gy=-1;gy<=1;gy++){el(c,'rect',{x:sx+gx*S-S/2,y:sy+gy*S-S/2,width:S,height:S,fill:(gx||gy)?'#f1f5f9':'#94a3b8',stroke:'#475569','stroke-width':2});}
+  el(c,'line',{x1:sx,y1:sy,x2:sx+S,y2:sy,stroke:'#0f172a','stroke-width':2.5});
+  el(c,'line',{x1:sx,y1:sy,x2:sx+S,y2:sy-S,stroke:'#dc2626','stroke-width':2.5});
+  el(c,'circle',{cx:sx,cy:sy,r:5,fill:'#0f172a'});
+  el(c,'text',{x:sx+S/2,y:sy+22,'text-anchor':'middle','font-size':18,'font-weight':700,fill:'#0f172a'},'1');
+  el(c,'text',{x:sx+S+8,y:sy-S+6,'font-size':18,'font-weight':700,fill:'#dc2626'},'1,41');
+
+  // Deco on title
+  var dsv=document.getElementById('decohex'), r=46, w=Math.sqrt(3)*r;
+  for(var row=0;row<7;row++)for(var col=0;col<5;col++){var x=60+col*w+(row%2?w/2:0), y=50+row*1.5*r;
+    el(dsv,'polygon',{points:hexPts(x,y,r-3),fill:((row*5+col)%7===3||(row*5+col)%11===4)?'#5eead4':'none',stroke:'#ccfbf1','stroke-width':2});}
+})();
+</script>
+</body>
+</html>
