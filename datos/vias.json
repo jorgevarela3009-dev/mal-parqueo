@@ -2,7 +2,12 @@
 {
   "UNI-01": {
     "zona": "unimagdalena",
-    "tipo": "arterial",
+    "tipo": "secundaria",
+    "tipo_fuente": "OpenStreetMap, consulta Overpass 2026-11-27: highway=residential (vía local, se mapea a secundaria; solo primary/trunk se mapean a arterial)",
+    "osm_way_id": 314669784,
+    "osm_way_id_calzada_opuesta": 314669776,
+    "osm_nombre": "Calle 29H3",
+    "osm_highway": "residential",
     "nombre": "Calle 29H - Cuadra 1",
     "trazo": [
       [11.226301, -74.188335],
@@ -11,7 +16,12 @@
   },
   "UNI-02": {
     "zona": "unimagdalena",
-    "tipo": "arterial",
+    "tipo": "secundaria",
+    "tipo_fuente": "OpenStreetMap, consulta Overpass 2026-11-27: highway=residential (vía local, se mapea a secundaria; solo primary/trunk se mapean a arterial)",
+    "osm_way_id": 314669784,
+    "osm_way_id_calzada_opuesta": 314669776,
+    "osm_nombre": "Calle 29H3",
+    "osm_highway": "residential",
     "nombre": "Calle 29H - Cuadra 2",
     "trazo": [
       [11.226241, -74.188608],
@@ -20,7 +30,12 @@
   },
   "UNI-03": {
     "zona": "unimagdalena",
-    "tipo": "arterial",
+    "tipo": "secundaria",
+    "tipo_fuente": "OpenStreetMap, consulta Overpass 2026-11-27: highway=residential (vía local, se mapea a secundaria; solo primary/trunk se mapean a arterial)",
+    "osm_way_id": 314669784,
+    "osm_way_id_calzada_opuesta": 314669776,
+    "osm_nombre": "Calle 29H3",
+    "osm_highway": "residential",
     "nombre": "Calle 29H - Cuadra 3",
     "trazo": [
       [11.225975, -74.189367],
@@ -29,7 +44,12 @@
   },
   "UNI-04": {
     "zona": "unimagdalena",
-    "tipo": "arterial",
+    "tipo": "secundaria",
+    "tipo_fuente": "OpenStreetMap, consulta Overpass 2026-11-27: highway=residential (vía local, se mapea a secundaria; solo primary/trunk se mapean a arterial)",
+    "osm_way_id": 314669784,
+    "osm_way_id_calzada_opuesta": 314669776,
+    "osm_nombre": "Calle 29H3",
+    "osm_highway": "residential",
     "nombre": "Calle 29H - Cuadra 4",
     "trazo": [
       [11.22577, -74.189622],
@@ -38,7 +58,12 @@
   },
   "UNI-05": {
     "zona": "unimagdalena",
-    "tipo": "arterial",
+    "tipo": "secundaria",
+    "tipo_fuente": "OpenStreetMap, consulta Overpass 2026-11-27: highway=residential (vía local, se mapea a secundaria; solo primary/trunk se mapean a arterial)",
+    "osm_way_id": 314669784,
+    "osm_way_id_calzada_opuesta": 314669776,
+    "osm_nombre": "Calle 29H3",
+    "osm_highway": "residential",
     "nombre": "Calle 29H - Cuadra 5",
     "trazo": [
       [11.225118, -74.190463],
@@ -47,7 +72,12 @@
   },
   "UNI-06": {
     "zona": "unimagdalena",
-    "tipo": "arterial",
+    "tipo": "secundaria",
+    "tipo_fuente": "OpenStreetMap, consulta Overpass 2026-11-27: highway=residential (vía local, se mapea a secundaria; solo primary/trunk se mapean a arterial)",
+    "osm_way_id": 314669784,
+    "osm_way_id_calzada_opuesta": 314669776,
+    "osm_nombre": "Calle 29H3",
+    "osm_highway": "residential",
     "nombre": "Calle 29H - Cuadra 6",
     "trazo": [
       [11.224567, -74.191191],
@@ -56,7 +86,12 @@
   },
   "UNI-07": {
     "zona": "unimagdalena",
-    "tipo": "arterial",
+    "tipo": "secundaria",
+    "tipo_fuente": "OpenStreetMap, consulta Overpass 2026-11-27: highway=residential (vía local, se mapea a secundaria; solo primary/trunk se mapean a arterial)",
+    "osm_way_id": 314669784,
+    "osm_way_id_calzada_opuesta": 314669776,
+    "osm_nombre": "Calle 29H3",
+    "osm_highway": "residential",
     "nombre": "Calle 29H - Cuadra 7",
     "trazo": [
       [11.224375, -74.191457],
@@ -65,7 +100,12 @@
   },
   "UNI-08": {
     "zona": "unimagdalena",
-    "tipo": "arterial",
+    "tipo": "secundaria",
+    "tipo_fuente": "OpenStreetMap, consulta Overpass 2026-11-27: highway=residential (vía local, se mapea a secundaria; solo primary/trunk se mapean a arterial)",
+    "osm_way_id": 314669784,
+    "osm_way_id_calzada_opuesta": 314669776,
+    "osm_nombre": "Calle 29H3",
+    "osm_highway": "residential",
     "nombre": "Calle 29H - Cuadra 8",
     "trazo": [
       [11.223875, -74.192108],
@@ -74,7 +114,12 @@
   },
   "UNI-09": {
     "zona": "unimagdalena",
-    "tipo": "arterial",
+    "tipo": "secundaria",
+    "tipo_fuente": "OpenStreetMap, consulta Overpass 2026-11-27: highway=residential (vía local, se mapea a secundaria; solo primary/trunk se mapean a arterial)",
+    "osm_way_id": 314669784,
+    "osm_way_id_calzada_opuesta": 314669776,
+    "osm_nombre": "Calle 29H3",
+    "osm_highway": "residential",
     "nombre": "Calle 29H - Cuadra 9",
     "trazo": [
       [11.223357, -74.192771],
