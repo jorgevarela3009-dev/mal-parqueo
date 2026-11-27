@@ -13,7 +13,7 @@
     <link rel="stylesheet"
           href="lib/leaflet/leaflet.css">
 
-    <link rel="stylesheet" href="estilos.css?v=4">
+    <link rel="stylesheet" href="estilos.css?v=6">
 </head>
 
 <body>
@@ -344,7 +344,7 @@
 
     <fieldset class="foto-caja"><legend>Fotografía opcional</legend>
 <div class="foto-opciones"><label>Seleccionar de la galería<input id="foto-archivo" type="file" accept="image/jpeg,image/png,image/webp"></label><label>Tomar fotografía<input id="foto-camara" type="file" accept="image/jpeg,image/png,image/webp" capture="environment"></label></div>
-<div id="foto-editor" hidden><p>La foto se pixela sola al subirla. Si queda algún rostro o placa, arrastra para cubrirlo.</p><canvas id="foto-canvas" aria-label="Editor de fotografía"></canvas><label><input type="checkbox" id="foto-confirmar" disabled> Pixelado automático aplicado.</label></div>
+<div id="foto-editor" hidden><p>La app pixela sola las placas y los rostros que detecta; el resto de la foto queda nítido. Revisa los recuadros: si falta alguno, tócalo o arrastra para pixelelarlo.</p><div class="foto-editor-lienzo"><canvas id="foto-canvas" aria-label="Editor de fotografía"></canvas><canvas id="foto-overlay" aria-hidden="true"></canvas></div><label><input type="checkbox" id="foto-confirmar"> Placas y rostros anonimizados</label></div>
 <button type="button" class="sec" id="foto-quitar">Eliminar fotografía</button><p id="foto-msg" aria-live="polite"></p></fieldset>
 <!-- Criticidad automática -->
 
@@ -577,7 +577,9 @@
     <script src="vias-mapa.js"></script>
     <script src="filtros.js"></script>
     <script src="resumen.js?v=4"></script>
-    <script src="reportes.js?v=5"></script>
+    <script src="lib/pico/pico.js"></script>
+    <script src="anonimizar.js?v=1"></script>
+    <script src="reportes.js?v=6"></script>
 
 </body>
 </html>
