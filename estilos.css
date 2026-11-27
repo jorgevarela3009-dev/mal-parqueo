@@ -1026,3 +1026,6 @@ footer {
 .evidencia-popup .foto-ausente {margin:8px 0 0;padding:8px;background:#f1f5f9;color:#475569;border-radius:6px;}
 }
 @media screen and (max-width:600px) {.intercambio {width:calc(100% - 24px);margin:14px auto;padding:16px;}.intercambio .fila button {flex:1 1 130px;}}
+
+/* El lienzo de Leaflet.heat no debe interceptar toques ni clics (los puntos van encima). */
+.leaflet-heatmap-layer { pointer-events: none; }

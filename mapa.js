@@ -36,8 +36,10 @@ if (trazos.length > 0) {
         }
     );
 }
+  // Leaflet.heat debe quedarse en overlayPane (z-index 400). Un pane propio
+  // desincroniza el canvas en el zoom animado y el arrastre en móvil.
   estado.mapa.createPane("hexagonos");
-  estado.mapa.getPane("hexagonos").style.zIndex = 390;
+  estado.mapa.getPane("hexagonos").style.zIndex = 450; // encima del calor
   estado.mapa.createPane("puntos");
   estado.mapa.getPane("puntos").style.zIndex = 620;
 
@@ -50,10 +52,33 @@ if (trazos.length > 0) {
     if (chk.checked) capa.addTo(estado.mapa);
     chk.addEventListener("change", () => {
       chk.checked ? capa.addTo(estado.mapa) : estado.mapa.removeLayer(capa);
+      if (id === "chk-calor") protegerCapaCalor();
       if (id === "chk-hex") dibujar();
     });
   }
+  // Leaflet.heat 0.2.0 solo se realinea en zoomanim y moveend. En un pellizco,
+  // Leaflet 1.9 no dispara zoomanim hasta soltar los dedos, así que se
+  // redibuja el lienzo en zoom (sin reset a mitad de un arrastre).
+  estado.mapa.on("zoom", alinearCapaCalor);
+  protegerCapaCalor();
   dibujar();
+}
+
+// El lienzo de calor no debe interceptar toques ni clics (los puntos van encima).
+function protegerCapaCalor() {
+  const canvas = estado.capaCalor && estado.capaCalor._canvas;
+  if (canvas) canvas.style.pointerEvents = "none";
+}
+
+// Solo se redibuja el calor cuando no hay animación CSS ni arrastre:
+// un _reset o invalidateSize en ese momento lo despega del mapPane.
+function alinearCapaCalor() {
+  const mapa = estado.mapa;
+  const heat = estado.capaCalor;
+  if (!heat || !mapa || typeof heat._reset !== "function") return;
+  if (mapa._animatingZoom) return;
+  if (mapa.dragging && mapa.dragging.moving()) return;
+  heat._reset();
 }
 
 // Junta los reportes precargados y los del navegador, sin repetir ids, y redibuja.
@@ -145,6 +170,8 @@ function dibujar() {
         ])
 
     );
+
+    protegerCapaCalor();
 
     // Actualizar los puntos individuales.
 
