@@ -182,7 +182,7 @@
 
         <label>
             <input type="checkbox"
-                   id="chk-hex">
+                   id="chk-hex" checked>
             Hexágonos
         </label>
         <label>
@@ -249,9 +249,10 @@
         <div id="leyenda-hex" hidden>
 
             Hexágonos de 50 m:
-            el color representa la
-            <b>suma de criticidad</b>
-            de los reportes.
+            cubren toda la zona.
+            El color es la
+            <b>suma de criticidad</b>;
+            las celdas grises no tienen reportes.
 
             <span class="escala-hex"></span>
 
@@ -560,8 +561,8 @@
 
     <script src="criticidad.js"></script>
     <script src="via.js"></script>
-    <script src="hexagonos.js"></script>
-    <script src="mapa.js?v=4"></script>
+    <script src="hexagonos.js?v=4"></script>
+    <script src="mapa.js?v=5"></script>
     <script src="captura.js?v=3"></script>
     <script src="coordenadas.js"></script>
     <script src="vias-mapa.js"></script>

@@ -247,19 +247,28 @@ function colorHex(fraccion) {
   return COLORES_HEX[i];
 }
 
-// Capa opcional: color = suma de puntajes de criticidad dentro de cada hexágono.
+// Capa opcional: grilla completa de la zona. Color = suma de criticidad;
+// las celdas vacías van en gris y no interceptan clics.
 function dibujarHexagonos(datos) {
   if (!estado.capaHex) return;
   estado.capaHex.clearLayers();
   const leyenda = document.getElementById("leyenda-hex");
   const chk = document.getElementById("chk-hex");
-  if (!chk || !chk.checked || !datos.length) {
+  if (!chk || !chk.checked) {
     if (leyenda) leyenda.hidden = true;
     return;
   }
-  const hexagonos = agruparEnHexagonos(datos, ANCHO_HEX, estado.origenHex);
-  const sumaMaxima = hexagonos[0].suma;
+  const hexagonos = completarGrilla(datos, ANCHO_HEX, estado.origenHex, estado.vias, 1);
+  const llenos = hexagonos.filter(h => h.cantidad > 0);
+  const sumaMaxima = llenos.length ? llenos[0].suma : 0;
   for (const h of hexagonos) {
+    if (h.cantidad === 0) {
+      L.polygon(h.esquinas, {
+        color: "#64748b", weight: 1, fillColor: "#cbd5e1",
+        fillOpacity: 0.22, pane: "hexagonos", interactive: false
+      }).addTo(estado.capaHex);
+      continue;
+    }
     L.polygon(h.esquinas, {
       color: "#7f1d1d", weight: 1, fillColor: colorHex(h.suma / sumaMaxima),
       fillOpacity: 0.65, pane: "hexagonos",

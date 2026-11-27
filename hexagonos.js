@@ -74,3 +74,62 @@ function agruparEnHexagonos(reportes, anchoMetros, origen) {
     return g;
   }).sort((a, b) => b.suma - a.suma);
 }
+
+// Caja en metros, respecto al origen, que envuelve todas las cuadras de vias.json.
+function cajaDeVias(vias, origen) {
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (const via of Object.values(vias)) {
+    for (const ll of (via.trazo || [])) {
+      const p = aMetros(ll[0], ll[1], origen);
+      if (p.x < minX) minX = p.x;
+      if (p.y < minY) minY = p.y;
+      if (p.x > maxX) maxX = p.x;
+      if (p.y > maxY) maxY = p.y;
+    }
+  }
+  return { minX, minY, maxX, maxY };
+}
+
+// Celdas que cubren la zona: caja de las cuadras + margenHex hexágonos.
+// No depende de los reportes, así la grilla queda fija al filtrar.
+function grillaDeZona(vias, anchoMetros, origen, margenHex) {
+  if (margenHex === undefined) margenHex = 1;
+  const radio = radioDesdeAncho(anchoMetros);
+  const caja = cajaDeVias(vias, origen);
+  const margen = margenHex * anchoMetros;
+  const minX = caja.minX - margen, maxX = caja.maxX + margen;
+  const minY = caja.minY - margen, maxY = caja.maxY + margen;
+  const pasoX = radio * Math.sqrt(3);
+  const pasoY = radio * 1.5;
+  const rMin = Math.floor(minY / pasoY) - 2;
+  const rMax = Math.ceil(maxY / pasoY) + 2;
+  const lista = [];
+  for (let r = rMin; r <= rMax; r++) {
+    const qMin = Math.floor(minX / pasoX - r / 2) - 2;
+    const qMax = Math.ceil(maxX / pasoX - r / 2) + 2;
+    for (let q = qMin; q <= qMax; q++) {
+      const c = centroDeHex(q, r, radio);
+      if (c.x + radio < minX || c.x - radio > maxX || c.y + radio < minY || c.y - radio > maxY) continue;
+      lista.push({
+        q: q + 0, r: r + 0, cantidad: 0, suma: 0, ids: [],
+        centro: aLatLng(c.x, c.y, origen),
+        esquinas: esquinasDeHex(q, r, radio, origen)
+      });
+    }
+  }
+  return lista;
+}
+
+// Une la grilla fija de la zona con los reportes (filtrados).
+// Las celdas sin reportes quedan en 0; las que sí tienen heredan cantidad, suma e ids.
+function completarGrilla(reportes, anchoMetros, origen, vias, margenHex) {
+  const llenos = {};
+  for (const h of agruparEnHexagonos(reportes, anchoMetros, origen)) {
+    llenos[h.q + "," + h.r] = h;
+  }
+  return grillaDeZona(vias, anchoMetros, origen, margenHex).map((celda) => {
+    const d = llenos[celda.q + "," + celda.r];
+    if (d) { celda.cantidad = d.cantidad; celda.suma = d.suma; celda.ids = d.ids; }
+    return celda;
+  }).sort((a, b) => b.suma - a.suma);
+}
