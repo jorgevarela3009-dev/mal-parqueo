@@ -418,6 +418,95 @@ function descripcionFiltrosResumen() {
 }
 
 
+
+// Comparación pico vs valle por cuadra, con los reportes ya filtrados.
+function contarPicoVallePorCuadra(reportes) {
+    const grupos = new Map();
+
+    for (const r of reportes || []) {
+        if (!r || !r.cuadra) continue;
+        if (!grupos.has(r.cuadra)) {
+            grupos.set(r.cuadra, { cuadra: r.cuadra, pico: 0, valle: 0 });
+        }
+        const g = grupos.get(r.cuadra);
+        const f = r.criticidad && r.criticidad.franja;
+        if (f === "pico") g.pico += 1;
+        else if (f === "valle") g.valle += 1;
+    }
+
+    return [...grupos.values()].map(g => {
+        const info = estado.vias && estado.vias[g.cuadra];
+        return {
+            cuadra: g.cuadra,
+            nombre: info ? info.nombre : g.cuadra,
+            pico: g.pico,
+            valle: g.valle,
+            total: g.pico + g.valle
+        };
+    }).sort((a, b) =>
+        (b.total - a.total) ||
+        (b.pico - a.pico) ||
+        a.cuadra.localeCompare(b.cuadra)
+    );
+}
+
+function escaparXml(s) {
+    return String(s == null ? "" : s)
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+// Barras horizontales agrupadas (pico y valle) en SVG, sin dependencias nuevas.
+function dibujarGraficaPicoValle(contenedor, filas) {
+    if (!contenedor) return;
+    if (!filas || !filas.length) {
+        contenedor.replaceChildren(
+            elementoResumen("p", "No hay reportes con estos filtros para comparar pico y valle.", "nota-resumen")
+        );
+        return;
+    }
+
+    let max = 0, totalPico = 0, totalValle = 0;
+    for (const f of filas) {
+        if (f.pico > max) max = f.pico;
+        if (f.valle > max) max = f.valle;
+        totalPico += f.pico;
+        totalValle += f.valle;
+    }
+    if (max < 1) max = 1;
+
+    const ancho = 400, margenIzq = 118, margenDer = 28, tope = 28;
+    const altoFila = 44, altoBarra = 12, hueco = 4;
+    const alto = tope + filas.length * altoFila + 8;
+    const maxBarra = ancho - margenIzq - margenDer;
+    const partes = [];
+    partes.push("<svg class='svg-pico-valle' viewBox='0 0 " + ancho + " " + alto + "' width='100%' height='" + alto + "' role='img' aria-label='Reportes en hora pico y hora valle por cuadra'>");
+    partes.push("<rect width='" + ancho + "' height='" + alto + "' fill='transparent'/>");
+    partes.push("<rect x='0' y='6' width='10' height='10' rx='2' fill='#c2410c'/>");
+    partes.push("<text x='14' y='15' font-size='11' fill='#1f2937'>Hora pico (" + totalPico + ")</text>");
+    partes.push("<rect x='130' y='6' width='10' height='10' rx='2' fill='#0f3d63'/>");
+    partes.push("<text x='144' y='15' font-size='11' fill='#1f2937'>Hora valle (" + totalValle + ")</text>");
+
+    filas.forEach((f, i) => {
+        const y = tope + i * altoFila;
+        partes.push("<g>");
+        partes.push("<title>" + escaparXml(f.nombre) + " · pico " + f.pico + " · valle " + f.valle + "</title>");
+        partes.push("<text x='" + (margenIzq - 8) + "' y='" + (y + 16) + "' text-anchor='end' font-size='10' font-weight='600' fill='#1f2937'>" + escaparXml(f.cuadra) + "</text>");
+        let wPico = Math.round((f.pico / max) * maxBarra);
+        let wValle = Math.round((f.valle / max) * maxBarra);
+        if (f.pico > 0 && wPico < 2) wPico = 2;
+        if (f.valle > 0 && wValle < 2) wValle = 2;
+        partes.push("<rect x='" + margenIzq + "' y='" + y + "' width='" + wPico + "' height='" + altoBarra + "' rx='2' fill='#c2410c'/>");
+        partes.push("<text x='" + (margenIzq + wPico + 4) + "' y='" + (y + 10) + "' font-size='10' fill='#1f2937'>" + f.pico + "</text>");
+        partes.push("<rect x='" + margenIzq + "' y='" + (y + altoBarra + hueco) + "' width='" + wValle + "' height='" + altoBarra + "' rx='2' fill='#0f3d63'/>");
+        partes.push("<text x='" + (margenIzq + wValle + 4) + "' y='" + (y + altoBarra + hueco + 10) + "' font-size='10' fill='#1f2937'>" + f.valle + "</text>");
+        partes.push("</g>");
+    });
+    partes.push("</svg>");
+    contenedor.innerHTML = partes.join("");
+}
+
+
 // Actualizar todo el resumen operativo.
 
 function actualizarResumen(reportes) {
@@ -484,6 +573,11 @@ function actualizarResumen(reportes) {
     dibujarRanking(ranking);
 
     dibujarTablaRanking(ranking);
+
+    dibujarGraficaPicoValle(
+        document.getElementById("grafica-pico-valle"),
+        contarPicoVallePorCuadra(datos)
+    );
 
     const recomendaciones = document.getElementById(
         "recomendaciones-resumen"

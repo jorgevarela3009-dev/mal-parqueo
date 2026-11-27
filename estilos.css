@@ -1029,3 +1029,11 @@ footer {
 
 /* El lienzo de Leaflet.heat no debe interceptar toques ni clics (los puntos van encima). */
 .leaflet-heatmap-layer { pointer-events: none; }
+
+/* Gráfica pico vs valle del resumen operativo */
+.grafica-pico-valle { margin-top: 1.1rem; padding-top: .9rem; }
+.svg-pico-valle { display: block; width: 100%; height: auto; max-width: 720px; }
+.svg-pico-valle text { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+@media print {
+  .svg-pico-valle { max-width: 100%; }
+}
